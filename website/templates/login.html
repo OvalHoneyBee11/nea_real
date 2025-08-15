@@ -1,9 +1,17 @@
 {%extends "base.html" %} {% block title %}Login{% endblock %}
 
 {% block content %}
-<h1> This is the Login Page </h1>
-{% if boolean == True %}
-Yes it is True
-{% endif %}
+<form method="POST">
+    <h3 align="centre">Login</h3>
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Login </button>
 
-{%endblock %}
+    {%endblock %}
