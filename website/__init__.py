@@ -16,9 +16,17 @@ def create_app():
 
     from .views import views
     from .auth import auth
+    from .tests import tests
+    from .sn import sn
+    from .simulator import sim
+    from .class_info import cls
 
+    app.register_blueprint(sim, url_prefix="/sim")
+    app.register_blueprint(cls, url_prefix="/cls")
     app.register_blueprint(views, url_prefix="/")
     app.register_blueprint(auth, url_prefix="/auth")
+    app.register_blueprint(tests, url_prefix="/tests")
+    app.register_blueprint(sn, url_prefix="/sn")
 
     from .models import User, Tasks
 
