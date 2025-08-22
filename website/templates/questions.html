@@ -3,4 +3,18 @@
 {% block content %}
 <h1>Questions</h1>
 <p>Here you can find a list of questions.</p>
+<form method="POST">
+    <h3 align="centre">Create a Question</h3>
+    <div class="form-group">
+        <label for="question">Question</label>
+        <input type="text" class="form-control" id="question" name="question" placeholder="Enter a Question" required>
+    </div>
+    <div class="form-group">
+        <label for="answer">Answer</label>
+        <input type="text" class="form-control" id="answer" name="answer" placeholder="Enter the answer" required>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Save </button>
+</form>
+
 {%endblock %}
