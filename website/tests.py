@@ -34,7 +34,6 @@ def questions():
                 user_id=current_user.id,
             )
             db.session.add(new_question)
-
             db.session.commit()
 
             if answer_text and len(answer_text.strip()) > 0:
@@ -42,8 +41,17 @@ def questions():
                     answer=answer_text.strip(), question_id=new_question.id
                 )
                 db.session.add(new_answer)
-
-            db.session.commit()
+                db.session.commit()
             flash("Question added!", category="success")
             return redirect(url_for("tests.questions"))
-    return render_template("questions.html", user=current_user)
+
+    show_questions = request.args.get("show", "1") == "1"
+    show_answers = request.args.get("answers", "0") == "1"
+    questions = Question.query.all() if show_questions else []
+    return render_template(
+        "questions.html",
+        user=current_user,
+        questions=questions,
+        show_questions=show_questions,
+        show_answers=show_answers,
+    )

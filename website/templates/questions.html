@@ -17,4 +17,34 @@
     <button type="submit" class="btn btn-primary">Save </button>
 </form>
 
+<form method="get">
+    <button type="submit" name="show" value="{{ '0' if show_questions else '1' }}" class="btn btn-secondary my-3">
+        {{ 'Hide All Questions' if show_questions else 'Show All Questions' }}
+    </button>
+    <button type="submit" name="answers" value="{{ '0' if show_answers else '1' }}" class="btn btn-secondary my-3">
+        {{ 'Hide All Answers' if show_answers else 'Show All Answers' }}
+    </button>
+</form>
+
+{% if show_questions %}
+{% if questions %}
+<h2>All Questions</h2>
+<ul>
+    {% for q in questions %}
+    <li>
+        <p>{{ q.question }}</p>
+        {% if show_answers and q.answer %}
+        <ul>
+            {% for a in q.answer %}
+            <li>Answer: {{ a.answer }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No questions yet.</p>
+{% endif %}
+{% endif %}
 {%endblock %}
