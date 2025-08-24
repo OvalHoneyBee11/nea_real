@@ -1,4 +1,5 @@
-{%extends "base.html" %} {% block title %}Questions{% endblock %}
+{% extends "base.html" %}
+{% block title %}Questions{% endblock %}
 
 {% block content %}
 <h1>Questions</h1>
@@ -17,34 +18,36 @@
     <button type="submit" class="btn btn-primary">Save </button>
 </form>
 
-<form method="get">
-    <button type="submit" name="show" value="{{ '0' if show_questions else '1' }}" class="btn btn-secondary my-3">
-        {{ 'Hide All Questions' if show_questions else 'Show All Questions' }}
-    </button>
-    <button type="submit" name="answers" value="{{ '0' if show_answers else '1' }}" class="btn btn-secondary my-3">
-        {{ 'Hide All Answers' if show_answers else 'Show All Answers' }}
-    </button>
-</form>
-
-{% if show_questions %}
-{% if questions %}
-<h2>All Questions</h2>
-<ul>
-    {% for q in questions %}
-    <li>
-        <p>{{ q.question }}</p>
-        {% if show_answers and q.answer %}
-        <ul>
-            {% for a in q.answer %}
-            <li>Answer: {{ a.answer }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-    </li>
-    {% endfor %}
-</ul>
+{% if total > 0 %}
+<div class="my-4">
+    <h2>Question {{ index + 1 }} of {{ total }}</h2>
+    <p>{{ current_question.question }}</p>
+    {% if show_answers and current_question.answer %}
+    <ul>
+        {% for a in current_question.answer %}
+        <li>Answer: {{ a.answer }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <form method="get" style="display:inline;">
+        <input type="hidden" name="index" value="{{ index - 1 }}">
+        <input type="hidden" name="answers" value="{{ '1' if show_answers else '0' }}">
+        <button type="submit" class="btn btn-secondary" {% if index==0 %}disabled{% endif %}>Previous</button>
+    </form>
+    <form method="get" style="display:inline;">
+        <input type="hidden" name="index" value="{{ index + 1 }}">
+        <input type="hidden" name="answers" value="{{ '1' if show_answers else '0' }}">
+        <button type="submit" class="btn btn-secondary" {% if index==total - 1 %}disabled{% endif %}>Next</button>
+    </form>
+    <form method="get" style="display:inline;">
+        <input type="hidden" name="index" value="{{ index }}">
+        <input type="hidden" name="answers" value="{{ '0' if show_answers else '1' }}">
+        <button type="submit" class="btn btn-info">
+            {{ 'Hide Answers' if show_answers else 'Show Answers' }}
+        </button>
+    </form>
+</div>
 {% else %}
 <p>No questions yet.</p>
 {% endif %}
-{% endif %}
-{%endblock %}
+{% endblock %}

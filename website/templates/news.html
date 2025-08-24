@@ -1,7 +1,19 @@
-{%extends "base.html" %} {% block title %}News{% endblock %}
+{% extends "base.html" %}
+{% block title %}News{% endblock %}
 
 {% block content %}
-<h1>News</h1>
-<p>Stay updated with the latest news and updates.</p>
-<p>Check back often for new articles and insights.</p>
-{%endblock %}
+<h1>Latest News</h1>
+{% if articles %}
+<ul>
+    {% for article in articles %}
+    <li>
+        <a href="{{ article.url }}" target="_blank"><strong>{{ article.title }}</strong></a><br>
+        <small>{{ article.source.name }}</small><br>
+        <p>{{ article.description }}</p>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No news articles found.</p>
+{% endif %}
+{% endblock %}

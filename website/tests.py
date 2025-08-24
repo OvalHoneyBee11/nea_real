@@ -45,13 +45,21 @@ def questions():
             flash("Question added!", category="success")
             return redirect(url_for("tests.questions"))
 
-    show_questions = request.args.get("show", "1") == "1"
+    # Only get questions for the current user
+    questions = Question.query.filter_by(user_id=current_user.id).all()
+    total = len(questions)
+    index = int(request.args.get("index", 0))
+    if total > 0:
+        index = max(0, min(index, total - 1))
+        current_question = questions[index]
+    else:
+        current_question = None
     show_answers = request.args.get("answers", "0") == "1"
-    questions = Question.query.all() if show_questions else []
     return render_template(
         "questions.html",
         user=current_user,
-        questions=questions,
-        show_questions=show_questions,
+        current_question=current_question,
+        index=index,
+        total=total,
         show_answers=show_answers,
     )
