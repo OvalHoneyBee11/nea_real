@@ -3,9 +3,14 @@
 
 {% block content %}
 <h1>Latest News</h1>
-{% if articles %}
+<form method="get">
+    <button type="submit">Refresh</button>
+</form>
+
+<h2>Economics News</h2>
+{% if global_articles %}
 <ul>
-    {% for article in articles %}
+    {% for article in global_articles %}
     <li>
         <a href="{{ article.url }}" target="_blank"><strong>{{ article.title }}</strong></a><br>
         <small>{{ article.source.name }}</small><br>
