@@ -1,8 +1,12 @@
-{%extends "base.html" %} {% block title %}Stats{% endblock %}
+{% extends "base.html" %}
+{% block title %}Statistics{% endblock %}
 
 {% block content %}
-<h1>Stats</h1>
-<p>Here you can find various statistics related to the application.</p>
-<p>Explore the data visualizations and insights we provide.</p>
-<p>Stay tuned for more updates and features!</p>
-{%endblock %}
+<h1>UK Economic Statistics</h1>
+{% if stats %}
+<pre>{{ stats | tojson(indent=2) }}</pre>
+<!-- Or format specific fields as needed -->
+{% else %}
+<p>Could not fetch economic statistics at this time.</p>
+{% endif %}
+{% endblock %}

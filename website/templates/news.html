@@ -14,7 +14,9 @@
     <li>
         <a href="{{ article.url }}" target="_blank"><strong>{{ article.title }}</strong></a><br>
         <small>{{ article.source.name }}</small><br>
+        {% if article.description %}
         <p>{{ article.description }}</p>
+        {% endif %}
     </li>
     {% endfor %}
 </ul>
