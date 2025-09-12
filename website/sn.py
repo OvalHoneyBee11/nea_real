@@ -34,7 +34,7 @@ def news():
 
 @sn.route("/stats", methods=["GET", "POST"])
 @login_required
-def stats():
+def get_stats():
     url = (
         f"https://api.tradingeconomics.com/historical/country/sweden/indicator/gdp"
         f"?c={TRADING_ECONOMICS_API_KEY}&f=json"
@@ -50,4 +50,21 @@ def stats():
         except Exception as e:
             print("Error parsing JSON:", e)
             stats_data = []
-    return render_template("stats.html", user=current_user, stats_data=stats_data)
+    stats_data = stats_data[:-1]
+    return render_template("stats.html", user=current_user, stats=stats_data)
+
+
+def get_gdp():
+    url = (
+        f"https://api.tradingeconomics.com/historical/country/sweden/indicator/gdp"
+        f"?c={TRADING_ECONOMICS_API_KEY}&f=json"
+    )
+    response = requests.get(url)
+    if response.status_code == 200:
+        try:
+            data = response.json()
+            if isinstance(data, list) and len(data) > 0:
+                return data[-1].get("Value", "N/A")
+        except Exception as e:
+            print("Error parsing JSON:", e)
+    return "N/A"

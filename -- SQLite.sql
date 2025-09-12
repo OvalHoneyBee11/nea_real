@@ -1,0 +1,2 @@
+-- SQLite
+GET * FROM users

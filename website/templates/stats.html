@@ -6,6 +6,10 @@
 {% if stats %}
 <pre>{{ stats | tojson(indent=2) }}</pre>
 <!-- Or format specific fields as needed -->
+<p>GDP: {{ stats.gdp }}</p>
+
+<p>Inflation Rate: {{ stats.inflation_rate }}</p>
+<p>Unemployment Rate: {{ stats.unemployment_rate }}</p>
 {% else %}
 <p>Could not fetch economic statistics at this time.</p>
 {% endif %}

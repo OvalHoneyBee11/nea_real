@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template
 from flask_login import login_required, current_user
-from .sn import get_uk_economic_stats
+from .sn import get_stats
 
 views = Blueprint("views", __name__)
 
@@ -14,5 +14,5 @@ def home():
 
 @views.route("/economic-stats")
 def economic_stats():
-    stats = get_uk_economic_stats()
+    stats = get_stats()
     return render_template("economic_stats.html", stats=stats)
