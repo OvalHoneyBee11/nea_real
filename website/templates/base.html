@@ -24,7 +24,7 @@
                 <a class="nav-item nav-link" id="signup" href="/auth/sign-up">Sign Up</a>
                 {% else %}
                 <a class="nav-item nav-link" id="home" href="/">Home</a>
-                <a class="nav-item nav-link" id="questions" href="/tests/questions">Questions</a>
+                <a class="nav-item nav-link" id="question_sets" href="/tests/question_sets">Question Sets</a>
                 <a class="nav-item nav-link" id="news" href="/sn/news">News</a>
                 <a class="nav-item nav-link" id="stats" href="/sn/stats">Stats</a>
                 <a class="nav-item nav-link" id="class" href="/cls/class_info">Class</a>
@@ -62,7 +62,9 @@
     {% endwith %}
     <div class="container">
         {% block content %}
-
+        <a href="{{ url_for('tests.create_question_set') }}">
+            <button type="button" class="btn btn-primary" style="margin-bottom: 1em;">Create New Question Set</button>
+        </a>
         {% endblock %}
 
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"

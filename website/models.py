@@ -21,6 +21,14 @@ class Question(db.Model):
     question = db.Column(db.String(500), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     answer = db.relationship("Answer", backref="question", lazy=True)
+    question_set_id = db.Column(db.Integer, db.ForeignKey("question_set.id"))
+
+class QuestionSet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), unique=True, nullable=False)
+    description = db.Column(db.String(500))
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    questions = db.relationship("Question", backref="question_set", lazy=True)
 
 
 class Answer(db.Model):

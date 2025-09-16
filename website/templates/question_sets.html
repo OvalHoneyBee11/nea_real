@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Question Sets{% endblock %}
+
+{% block content %}
+<h1>All Question Sets</h1>
+
+<!-- Button to create a new question set -->
+<a href="{{ url_for('tests.create_question_set') }}">
+    <button type="button" class="btn btn-primary" style="margin-bottom: 1em;">Create New Question Set</button>
+</a>
+
+<!-- Dropdown to select a question set -->
+{% if question_sets %}
+    <form method="get" action="{{ url_for('question_set') }}" style="margin-bottom: 1em;">
+        <label for="selected_set">Select a Question Set:</label>
+        <select name="selected_set" id="selected_set" onchange="this.form.submit()">
+            <option value="">-- Select --</option>
+            {% for qs in question_sets %}
+                <option value="{{ qs.id }}" {% if selected_set and selected_set.id == qs.id %}selected{% endif %}>
+                    {{ qs.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+{% endif %}
+
+<!-- Display selected question set or all sets -->
+{% if selected_set %}
+    <h2>{{ selected_set.name }}</h2>
+    <ul>
+        {% for q in selected_set.questions %}
+            <li>{{ q.question }} — <em>{{ q.answer }}</em></li>
+        {% endfor %}
+    </ul>
+{% elif question_sets %}
+    <ul>
+        {% for qs in question_sets %}
+            <li>
+                <strong>{{ qs.name }}</strong>
+                <ul>
+                    {% for q in qs.questions %}
+                        <li>{{ q.question }} — <em>{{ q.answer }}</em></li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No question sets found.</p>
+{% endif %}
+{% endblock %}

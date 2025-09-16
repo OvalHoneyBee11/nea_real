@@ -1,11 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Questions{% endblock %}
+{% block title %}Create Question{% endblock %}
 
 {% block content %}
-<h1>Questions</h1>
-<p>Here you can find a list of questions.</p>
+<h1>Create a Question</h1>
+<p>Use the form below to add a new question.</p>
 <form method="POST">
-    <h3 align="centre">Create a Question</h3>
     <div class="form-group">
         <label for="question">Question</label>
         <input type="text" class="form-control" id="question" name="question" placeholder="Enter a Question" required>
@@ -15,39 +14,9 @@
         <input type="text" class="form-control" id="answer" name="answer" placeholder="Enter the answer" required>
     </div>
     <br />
-    <button type="submit" class="btn btn-primary">Save </button>
+    <button type="submit" class="btn btn-primary">Save</button>
 </form>
-
-{% if total > 0 %}
-<div class="my-4">
-    <h2>Question {{ index + 1 }} of {{ total }}</h2>
-    <p>{{ current_question.question }}</p>
-    {% if show_answers and current_question.answer %}
-    <ul>
-        {% for a in current_question.answer %}
-        <li>Answer: {{ a.answer }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    <form method="get" style="display:inline;">
-        <input type="hidden" name="index" value="{{ index - 1 }}">
-        <input type="hidden" name="answers" value="{{ '1' if show_answers else '0' }}">
-        <button type="submit" class="btn btn-secondary" {% if index==0 %}disabled{% endif %}>Previous</button>
-    </form>
-    <form method="get" style="display:inline;">
-        <input type="hidden" name="index" value="{{ index + 1 }}">
-        <input type="hidden" name="answers" value="{{ '1' if show_answers else '0' }}">
-        <button type="submit" class="btn btn-secondary" {% if index==total - 1 %}disabled{% endif %}>Next</button>
-    </form>
-    <form method="get" style="display:inline;">
-        <input type="hidden" name="index" value="{{ index }}">
-        <input type="hidden" name="answers" value="{{ '0' if show_answers else '1' }}">
-        <button type="submit" class="btn btn-info">
-            {{ 'Hide Answers' if show_answers else 'Show Answers' }}
-        </button>
-    </form>
-</div>
-{% else %}
-<p>No questions yet.</p>
+{% if message %}
+    <div class="alert alert-info mt-3">{{ message }}</div>
 {% endif %}
 {% endblock %}
