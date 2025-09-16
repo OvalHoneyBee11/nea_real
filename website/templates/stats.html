@@ -2,15 +2,14 @@
 {% block title %}Statistics{% endblock %}
 
 {% block content %}
-<h1>UK Economic Statistics</h1>
+<h1>Economic Statistics</h1>
 {% if stats %}
-<pre>{{ stats | tojson(indent=2) }}</pre>
-<!-- Or format specific fields as needed -->
-<p>GDP: {{ stats.gdp }}</p>
-
-<p>Inflation Rate: {{ stats.inflation_rate }}</p>
-<p>Unemployment Rate: {{ stats.unemployment_rate }}</p>
+    <pre>{{ stats | tojson(indent=2) }}</pre>
+    {% if gdp_plot_path %}
+        <h2>GDP Over Time</h2>
+        <img src="{{ url_for('static', filename=gdp_plot_path) }}" alt="GDP Plot" style="max-width:100%;">
+    {% endif %}
 {% else %}
-<p>Could not fetch economic statistics at this time.</p>
+    <p>Could not fetch economic statistics at this time.</p>
 {% endif %}
 {% endblock %}

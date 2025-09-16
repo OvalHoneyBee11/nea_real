@@ -1,7 +1,11 @@
 from flask import Blueprint, render_template
 from flask_login import login_required, current_user
 import requests
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd 
 import os
+
 
 sn = Blueprint("sn", __name__)
 
@@ -41,7 +45,6 @@ def get_stats():
     )
     stats_data = []
     response = requests.get(url)
-    print("Trading Economics API response:", response.text)
     if response.status_code == 200:
         try:
             stats_data = response.json()
@@ -50,21 +53,23 @@ def get_stats():
         except Exception as e:
             print("Error parsing JSON:", e)
             stats_data = []
-    stats_data = stats_data[:-1]
-    return render_template("stats.html", user=current_user, stats=stats_data)
+    return render_template("stats.html", user=current_user, stats_data=stats_data)
 
+def create_dataframe(stats_data):
+    df = pd.DataFrame(stats_data)
+    df['Date'] = pd.to_datetime(df['Date'])
+    df.set_index('Date', inplace=True)
+    df.sort_index(inplace=True)
+    return df
 
-def get_gdp():
-    url = (
-        f"https://api.tradingeconomics.com/historical/country/sweden/indicator/gdp"
-        f"?c={TRADING_ECONOMICS_API_KEY}&f=json"
-    )
-    response = requests.get(url)
-    if response.status_code == 200:
-        try:
-            data = response.json()
-            if isinstance(data, list) and len(data) > 0:
-                return data[-1].get("Value", "N/A")
-        except Exception as e:
-            print("Error parsing JSON:", e)
-    return "N/A"
+def plot_gdp_trend(df):
+    plt.figure(figsize=(10, 5))
+    plt.plot(df.index, df['Value'], marker='o', linestyle='-')
+    plt.title('Sweden GDP Over Time')
+    plt.xlabel('Date')
+    plt.ylabel('GDP Value')
+    plt.grid(True)
+    img_path = os.path.join('website', 'static', 'gdp_trend.png')
+    plt.savefig(img_path)
+    plt.close()
+    return img_path
