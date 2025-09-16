@@ -514,6 +514,7 @@ dependencies = [
     { name = "flask-sqlalchemy" },
     { name = "matplotlib" },
     { name = "numpy" },
+    { name = "pandas" },
     { name = "requests" },
     { name = "tradingeconomics" },
 ]
@@ -526,6 +527,7 @@ requires-dist = [
     { name = "flask-sqlalchemy", specifier = ">=3.1.1" },
     { name = "matplotlib", specifier = ">=3.10.5" },
     { name = "numpy", specifier = ">=2.3.2" },
+    { name = "pandas", specifier = ">=2.3.2" },
     { name = "requests", specifier = ">=2.32.5" },
     { name = "tradingeconomics", specifier = ">=4.5.4" },
 ]

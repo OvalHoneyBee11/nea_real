@@ -1,11 +1,10 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 import requests
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd 
 import os
-
 
 sn = Blueprint("sn", __name__)
 
@@ -39,37 +38,91 @@ def news():
 @sn.route("/stats", methods=["GET", "POST"])
 @login_required
 def get_stats():
+    # Get country from form (POST) or query string (GET), default to Sweden
+    if request.method == "POST":
+        country = request.form.get("country", "sweden").lower()
+    else:
+        country = request.args.get("country", "sweden").lower()
+
     url = (
-        f"https://api.tradingeconomics.com/historical/country/sweden/indicator/gdp"
+        f"https://api.tradingeconomics.com/historical/country/{country}/indicator/gdp"
         f"?c={TRADING_ECONOMICS_API_KEY}&f=json"
     )
     stats_data = []
+    gdp_plot_filename = None
     response = requests.get(url)
     if response.status_code == 200:
         try:
             stats_data = response.json()
             if isinstance(stats_data, dict):
                 stats_data = []
+            stats_data = stats_data[:-1]
+            if stats_data and len(stats_data) > 0:
+                df = create_dataframe(stats_data)
+                gdp_plot_filename = plot_gdp_trend(df, country)
         except Exception as e:
             print("Error parsing JSON:", e)
             stats_data = []
-    return render_template("stats.html", user=current_user, stats_data=stats_data)
+
+    # Pagination logic
+    page = int(request.args.get("page", 1))
+    per_page = 10
+    start = (page - 1) * per_page
+    end = start + per_page
+    paged_stats = stats_data[start:end]
+    total = len(stats_data)
+
+    # Create DataFrame for all data and for the current page
+    df = create_dataframe(stats_data)
+    df_page = create_dataframe(paged_stats)
+
+    # Plot the full graph and the page graph
+    gdp_plot_filename = plot_gdp_trend(df, country)
+    gdp_plot_page_filename = plot_gdp_page(df_page, country)
+
+    return render_template(
+        "stats.html",
+        user=current_user,
+        stats_data=paged_stats,
+        gdp_plot_filename=gdp_plot_filename,
+        gdp_plot_page_filename=gdp_plot_page_filename,
+        page=page,
+        per_page=per_page,
+        total=total,
+        country=country.capitalize()
+    )
 
 def create_dataframe(stats_data):
     df = pd.DataFrame(stats_data)
-    df['Date'] = pd.to_datetime(df['Date'])
-    df.set_index('Date', inplace=True)
+    df['DateTime'] = pd.to_datetime(df['DateTime'], format='mixed', utc=True)
+    df.set_index('DateTime', inplace=True)
     df.sort_index(inplace=True)
     return df
 
-def plot_gdp_trend(df):
-    plt.figure(figsize=(10, 5))
-    plt.plot(df.index, df['Value'], marker='o', linestyle='-')
-    plt.title('Sweden GDP Over Time')
-    plt.xlabel('Date')
-    plt.ylabel('GDP Value')
-    plt.grid(True)
-    img_path = os.path.join('website', 'static', 'gdp_trend.png')
+def plot_gdp_trend(df, country):
+    plt.figure(figsize=(10, 6))
+    plt.plot(df.index, df['Value'], marker='o', linestyle='-', linewidth=2, markersize=4)
+    plt.title(f'{country.capitalize()} GDP Over Time', fontsize=16, fontweight='bold')
+    plt.xlabel('Date', fontsize=12)
+    plt.ylabel(f'{country.capitalize()} GDP Value', fontsize=12)
+    plt.grid(True, alpha=0.3)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    img_path = os.path.join('website', 'static', 'gdp_plot.png')
     plt.savefig(img_path)
     plt.close()
-    return img_path
+    return 'gdp_plot.png'
+
+def plot_gdp_page(df_page, country):
+    plt.figure(figsize=(8, 4))
+    plt.plot(df_page.index, df_page['Value'], marker='o', linestyle='-', color='orange')
+    plt.title(f'{country.capitalize()} GDP (Selected Period)', fontsize=14)
+    plt.xlabel('Date', fontsize=10)
+    plt.ylabel(f'{country.capitalize()} GDP Value', fontsize=10)
+    plt.grid(True, alpha=0.3)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    img_path = os.path.join('website', 'static', 'gdp_plot_page.png')
+    plt.savefig(img_path)
+    plt.close()
+    return 'gdp_plot_page.png'

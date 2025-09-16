@@ -9,7 +9,7 @@ DB_NAME = "database.db"
 
 
 def create_app():
-    app_root = "/home/lawrence/git/nea_real"
+    app_root = "."
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "keen"
     app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{app_root}/{DB_NAME}"
