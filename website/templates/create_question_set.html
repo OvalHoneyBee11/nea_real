@@ -3,19 +3,13 @@
 
 {% block content %}
 <h1>Create a New Question Set</h1>
-<p>Use the form below to create a new question set.</p>
-
 <form method="POST">
     <div class="form-group">
         <label for="set_name">Set Name</label>
         <input type="text" class="form-control" id="set_name" name="set_name" placeholder="Enter set name" required>
     </div>
-    <div class="form-group">
-        <label for="set_description">Description (Optional)</label>
-        <textarea class="form-control" id="set_description" name="set_description" rows="3" placeholder="Enter a description for this question set"></textarea>
-    </div>
     <br />
-    <button type="submit" class="btn btn-primary">Create Question Set</button>
+    <button type="submit" class="btn btn-primary">Create</button>
     <a href="{{ url_for('tests.question_sets') }}" class="btn btn-secondary">Cancel</a>
 </form>
 {% endblock %}

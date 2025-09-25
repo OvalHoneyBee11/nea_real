@@ -13,15 +13,10 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
-    tasks = db.relationship("Task")
+    tasks = db.relationship("Task", backref="user", lazy=True)
+    questions = db.relationship("Question", backref="user", lazy=True)
+    question_sets = db.relationship("QuestionSet", backref="user", lazy=True)
 
-
-class Question(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.String(500), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    answer = db.relationship("Answer", backref="question", lazy=True)
-    question_set_id = db.Column(db.Integer, db.ForeignKey("question_set.id"))
 
 class QuestionSet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -31,8 +26,15 @@ class QuestionSet(db.Model):
     questions = db.relationship("Question", backref="question_set", lazy=True)
 
 
+class Question(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    question = db.Column(db.String(500), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    question_set_id = db.Column(db.Integer, db.ForeignKey("question_set.id"))
+    answers = db.relationship("Answer", backref="question", lazy=True)
+
+
 class Answer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     answer = db.Column(db.String(500), nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey("question.id"))
-    # user = db.relationship("Question", backref="answers")

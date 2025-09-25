@@ -11,7 +11,7 @@
 
 <!-- Dropdown to select a question set -->
 {% if question_sets %}
-    <form method="get" action="{{ url_for('question_set') }}" style="margin-bottom: 1em;">
+    <form method="get" action="{{ url_for('tests.question_sets', question_sets=question_sets) }}" style="margin-bottom: 1em;">
         <label for="selected_set">Select a Question Set:</label>
         <select name="selected_set" id="selected_set" onchange="this.form.submit()">
             <option value="">-- Select --</option>
