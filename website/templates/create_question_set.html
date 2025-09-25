@@ -9,7 +9,7 @@
         <input type="text" class="form-control" id="set_name" name="set_name" placeholder="Enter set name" required>
     </div>
     <br />
-    <button type="submit" class="btn btn-primary">Create</button>
+    <button formaction="{{ url_for('tests.questions') }}" type="submit" class="btn btn-primary">Create</button>
     <a href="{{ url_for('tests.question_sets') }}" class="btn btn-secondary">Cancel</a>
 </form>
 {% endblock %}
