@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Create Question Set{% endblock %}
+{% block title %}Add Questions{% endblock %}
 
 {% block content %}
-<h1> Add Question to Set: {{ question_sets.name }} </h1>
+<h1>Add Question to Set: {{ question_set.name }}</h1>
 <form method="POST">
     <div class="form-group">
         <label for="question">Question</label>
@@ -15,4 +15,22 @@
     <br />
     <button type="submit" class="btn btn-primary">Add Question</button>
     <a href="{{ url_for('tests.question_sets') }}" class="btn btn-secondary">Done</a>
+</form>
+
+<hr>
+
+<h2>Questions in this set:</h2>
+{% if question_set.questions %}
+    <ul>
+        {% for q in question_set.questions %}
+            <li>
+                <strong>Q:</strong> {{ q.question }} — 
+                <strong>A:</strong> <em>{{ q.answers[0].answer if q.answers else 'No answer' }}</em>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No questions added yet.</p>
+{% endif %}
+
 {% endblock %}

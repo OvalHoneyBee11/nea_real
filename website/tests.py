@@ -6,13 +6,22 @@ from flask_login import login_required, current_user
 tests = Blueprint("tests", __name__)
 
 
-@tests.route("/questions", methods=["GET", "POST"])
+@tests.route("/questions/<int:set_id>", methods=["GET", "POST"])
 @login_required
-def questions():
+def questions(set_id):
+    # Get the question set
+    question_set = QuestionSet.query.filter_by(
+        id=set_id, 
+        user_id=current_user.id
+    ).first()
+    
+    if not question_set:
+        flash("Question set not found.", category="error")
+        return redirect(url_for("tests.question_sets"))
+    
     if request.method == "POST":
         question_text = request.form.get("question")
         answer_text = request.form.get("answer")
-        question_set_id = request.form.get("question_set_id")
         
         if not question_text:
             flash("Question cannot be empty.", category="error")
@@ -22,7 +31,7 @@ def questions():
             new_question = Question(
                 question=question_text, 
                 user_id=current_user.id,
-                question_set_id=question_set_id if question_set_id else None
+                question_set_id=set_id
             )
             db.session.add(new_question)
             db.session.flush()  # Get the question ID
@@ -32,12 +41,10 @@ def questions():
             db.session.add(new_answer)
             db.session.commit()
             
-            flash("Question and answer created successfully!", category="success")
-            return redirect(url_for("tests.questions"))
+            flash("Question and answer added successfully!", category="success")
+            return redirect(url_for("tests.questions", set_id=set_id))
 
-    questions = Question.query.filter_by(user_id=current_user.id).all()
-    question_sets = QuestionSet.query.filter_by(user_id=current_user.id).all()
-    return render_template("questions.html", user=current_user, questions=questions, question_sets=question_sets)
+    return render_template("questions.html", user=current_user, question_set=question_set)
 
 
 @tests.route("/question_sets", methods=["GET"])
@@ -88,6 +95,7 @@ def create_question_set():
                 db.session.add(new_set)
                 db.session.commit()
                 flash("Question set created successfully!", category="success")
-                return redirect(url_for("tests.question_sets"))
+                # Redirect to add questions to this new set
+                return redirect(url_for("tests.questions", set_id=new_set.id))
 
     return render_template("create_question_set.html", user=current_user)

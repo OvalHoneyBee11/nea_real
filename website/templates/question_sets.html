@@ -11,7 +11,7 @@
 
 <!-- Dropdown to select a question set -->
 {% if question_sets %}
-    <form method="get" action="{{ url_for('tests.question_sets', question_sets=question_sets) }}" style="margin-bottom: 1em;">
+    <form method="get" action="{{ url_for('tests.question_sets') }}" style="margin-bottom: 1em;">
         <label for="selected_set">Select a Question Set:</label>
         <select name="selected_set" id="selected_set" onchange="this.form.submit()">
             <option value="">-- Select --</option>
@@ -27,21 +27,41 @@
 <!-- Display selected question set or all sets -->
 {% if selected_set %}
     <h2>{{ selected_set.name }}</h2>
-    <ul>
-        {% for q in selected_set.questions %}
-            <li>{{ q.question }} — <em>{{ q.answer }}</em></li>
-        {% endfor %}
-    </ul>
+    <a href="{{ url_for('tests.questions', set_id=selected_set.id) }}">
+        <button type="button" class="btn btn-success btn-sm">Add Questions</button>
+    </a>
+    {% if selected_set.questions %}
+        <ul>
+            {% for q in selected_set.questions %}
+                <li>
+                    <strong>Q:</strong> {{ q.question }} — 
+                    <strong>A:</strong> <em>{{ q.answers[0].answer if q.answers else 'No answer' }}</em>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No questions in this set yet.</p>
+    {% endif %}
 {% elif question_sets %}
     <ul>
         {% for qs in question_sets %}
             <li>
                 <strong>{{ qs.name }}</strong>
-                <ul>
-                    {% for q in qs.questions %}
-                        <li>{{ q.question }} — <em>{{ q.answer }}</em></li>
-                    {% endfor %}
-                </ul>
+                <a href="{{ url_for('tests.questions', set_id=qs.id) }}">
+                    <button type="button" class="btn btn-success btn-sm">Add Questions</button>
+                </a>
+                {% if qs.questions %}
+                    <ul>
+                        {% for q in qs.questions %}
+                            <li>
+                                <strong>Q:</strong> {{ q.question }} — 
+                                <strong>A:</strong> <em>{{ q.answers[0].answer if q.answers else 'No answer' }}</em>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p style="margin-left: 1em; color: #666;">No questions yet</p>
+                {% endif %}
             </li>
         {% endfor %}
     </ul>
