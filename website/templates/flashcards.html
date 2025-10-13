@@ -25,9 +25,11 @@
     <div class="answer hidden" id="answer"></div>
 </div>
 
-<button class="btn btn-info" onclick="toggleAnswer()">Show Answer</button>
-<button class="btn btn-secondary" onclick="prevCard()" id="prev">← Previous</button>
-<button class="btn btn-primary" onclick="nextCard()" id="next">Next →</button>
+<div style="text-align: center; margin-top: 1em;">
+    <button class="btn btn-info" onclick="toggleAnswer()">Show Answer</button>
+    <button class="btn btn-secondary" onclick="prevCard()" id="prev">← Previous</button>
+    <button class="btn btn-primary" onclick="nextCard()" id="next">Next →</button>
+</div>
 
 <script>
     const questions = {{ questions_data | tojson }};
