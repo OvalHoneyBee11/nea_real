@@ -99,3 +99,31 @@ def create_question_set():
                 return redirect(url_for("tests.questions", set_id=new_set.id))
 
     return render_template("create_question_set.html", user=current_user)
+
+
+@tests.route("/flashcards/<int:set_id>", methods=["GET"])
+@login_required
+def flashcards(set_id):
+    # Get the question set
+    question_set = QuestionSet.query.filter_by(
+        id=set_id, 
+        user_id=current_user.id
+    ).first()
+    
+    if not question_set:
+        flash("Question set not found.", category="error")
+        return redirect(url_for("tests.question_sets"))
+    
+    if not question_set.questions:
+        flash("This question set has no questions yet.", category="error")
+        return redirect(url_for("tests.question_sets"))
+    
+    # Convert questions to dictionary format for JSON serialization
+    questions_data = []
+    for q in question_set.questions:
+        questions_data.append({
+            'question': q.question,
+            'answer': q.answers[0].answer if q.answers else 'No answer'
+        })
+    
+    return render_template("flashcards.html", user=current_user, question_set=question_set, questions_data=questions_data)

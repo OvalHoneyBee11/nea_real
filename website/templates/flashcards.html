@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Flashcards - {{ question_set.name }}{% endblock %}
+
+{% block content %}
+<style>
+    .flashcard {
+        border: 2px solid #007bff;
+        border-radius: 10px;
+        padding: 2em;
+        margin: 2em auto;
+        max-width: 600px;
+        min-height: 200px;
+        text-align: center;
+    }
+    .question { font-size: 1.5em; font-weight: bold; }
+    .answer { font-size: 1.2em; color: #28a745; margin-top: 1em; }
+    .hidden { display: none; }
+</style>
+
+<h1>{{ question_set.name }}</h1>
+<p>Question <span id="current">1</span> of {{ questions_data|length }}</p>
+
+<div class="flashcard">
+    <div class="question" id="question"></div>
+    <div class="answer hidden" id="answer"></div>
+</div>
+
+<button class="btn btn-info" onclick="toggleAnswer()">Show Answer</button>
+<button class="btn btn-secondary" onclick="prevCard()" id="prev">← Previous</button>
+<button class="btn btn-primary" onclick="nextCard()" id="next">Next →</button>
+
+<script>
+    const questions = {{ questions_data | tojson }};
+    let i = 0;
+
+    function show() {
+        document.getElementById('question').textContent = questions[i].question;
+        document.getElementById('answer').textContent = questions[i].answer;
+        document.getElementById('answer').classList.add('hidden');
+        document.getElementById('current').textContent = i + 1;
+        document.getElementById('prev').disabled = i === 0;
+        document.getElementById('next').disabled = i === questions.length - 1;
+    }
+
+    function toggleAnswer() {
+        document.getElementById('answer').classList.toggle('hidden');
+    }
+
+    function nextCard() {
+        if (i < questions.length - 1) { i++; show(); }
+    }
+
+    function prevCard() {
+        if (i > 0) { i--; show(); }
+    }
+
+    show();
+</script>
+{% endblock %}

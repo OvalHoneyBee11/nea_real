@@ -31,6 +31,11 @@
         <button type="button" class="btn btn-success btn-sm">Add Questions</button>
     </a>
     {% if selected_set.questions %}
+        <a href="{{ url_for('tests.flashcards', set_id=selected_set.id) }}">
+            <button type="button" class="btn btn-primary btn-sm">Run Flashcards</button>
+        </a>
+    {% endif %}
+    {% if selected_set.questions %}
         <ul>
             {% for q in selected_set.questions %}
                 <li>
@@ -51,6 +56,9 @@
                     <button type="button" class="btn btn-success btn-sm">Add Questions</button>
                 </a>
                 {% if qs.questions %}
+                    <a href="{{ url_for('tests.flashcards', set_id=qs.id) }}">
+                        <button type="button" class="btn btn-primary btn-sm">Run Flashcards</button>
+                    </a>
                     <ul>
                         {% for q in qs.questions %}
                             <li>
