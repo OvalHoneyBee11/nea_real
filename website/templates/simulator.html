@@ -1,7 +1,90 @@
-{%extends "base.html" %} {% block title %}Economic Simulator{% endblock %}
+{% extends "base.html" %}
+{% block title %}Economic Simulator{% endblock %}
 
 {% block content %}
-<h1>Economic Simulator</h1>
-<p>Welcome to the Economic Simulator. Here you can simulate various economic scenarios.</p>
-<p>Use the controls below to adjust parameters and see how they affect the economy.</p>
-{%endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KineticGraphs Economic Simulator</title>
+    
+<link rel="stylesheet" href="http://kineticgraphs.org/css/kg.0.2.6.css">
+<script src="http://kineticgraphs.org/js/kg.0.2.6.js"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .test-box {
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Economic Simulator</h1>
+    <script>
+        // Test if KG loaded
+        window.addEventListener('load', function() {
+            const testEl = document.getElementById('loadTest');
+            if (typeof KG !== 'undefined') {
+                testEl.innerHTML = '✓ KG JavaScript loaded successfully!';
+                testEl.style.color = 'green';
+            } else {
+                testEl.innerHTML = '✗ KG JavaScript NOT loaded. Check your internet connection!';
+                testEl.style.color = 'red';
+            }
+        });
+    </script>
+    
+    <h2>Graph Name</h2>
+    
+    <!-- KineticGraph Container -->
+    <div class="kg-container">
+schema: EconSchema
+params:
+  - {name: a, value: 6, min: 0, max: 10}
+  - {name: b, value: 4, min: 0, max: 10}
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis: {max: 10, ticks: 5}
+      yAxis: {max: 10, ticks: 5}
+      objects:
+        - Point:
+            coordinates: [params.a, params.b]
+            color: blue
+            label: {text: A}
+            drag:
+              - directions: x
+                param: a
+              - directions: y
+                param: b
+        - Point:
+            coordinates: [3, 3]
+            color: red
+            label: {text: B}
+            r: 5
+        - Line:
+            point: [params.a, params.b]
+            point2: [3, 3]
+            color: green
+    sidebar:
+      controls:
+        - title: Adjust Point A
+          sliders:
+            - {param: a, label: X coordinate}
+            - {param: b, label: Y coordinate}
+    </div>
+</body>
+</html>
+{% endblock %}

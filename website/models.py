@@ -15,7 +15,8 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(150), nullable=False)
     tasks = db.relationship("Task", backref="user", lazy=True)
     questions = db.relationship("Question", backref="user", lazy=True)
-    question_sets = db.relationship("QuestionSet", backref="user", lazy=True)
+    question_sets = db.relationship("QuestionSet", backref="user", lazy=True)   
+    
 
 
 class QuestionSet(db.Model):
