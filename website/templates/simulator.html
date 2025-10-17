@@ -37,51 +37,48 @@
         window.addEventListener('load', function() {
             const testEl = document.getElementById('loadTest');
             if (typeof KG !== 'undefined') {
-                testEl.innerHTML = '✓ KG JavaScript loaded successfully!';
+                testEl.innerHTML = 'KG JavaScript loaded successfully!';
                 testEl.style.color = 'green';
             } else {
-                testEl.innerHTML = '✗ KG JavaScript NOT loaded. Check your internet connection!';
+                testEl.innerHTML = 'KG JavaScript NOT loaded.';
                 testEl.style.color = 'red';
             }
         });
     </script>
     
-    <h2>Graph Name</h2>
+    <h2>Consumer and Producer surplus</h2>
     
     <!-- KineticGraph Container -->
     <div class="kg-container">
 schema: EconSchema
-params:
-  - {name: a, value: 6, min: 0, max: 10}
-  - {name: b, value: 4, min: 0, max: 10}
+params: 
+    - {name: demandShift, value: 0, min: -2, max: 2, round: 0.1}
+    - {name: supplyShift, value: 0, min: -2, max: 2, round: 0.1}
 layout:
-  OneGraphPlusSidebar:
+  OneGraph:
     graph:
-      xAxis: {max: 10, ticks: 5}
-      yAxis: {max: 10, ticks: 5}
       objects:
-        - Point:
-            coordinates: [params.a, params.b]
-            color: blue
-            label: {text: A}
-            drag:
-              - horizontal: a
-              - vertical: b
-        - Point:
-            coordinates: [3, 3]
-            color: red
-            label: {text: B}
-            r: 5
-        - Line:
-            point: [params.a, params.b]
-            point2: [3, 3]
-            color: green
-    sidebar:
-      controls:
-        - title: Adjust Point A
-          sliders:
-            - {param: a, label: X coordinate}
-            - {param: b, label: Y coordinate}
+      - EconLinearEquilibrium:
+          name: ourEquilibrium
+          demand: 
+            name: ourDemand
+            xIntercept: 8 + params.demandShift
+            invSlope: -1
+            drag: 
+            - horizontal: demandShift
+            surplus: 
+          supply: 
+            name: ourSupply
+            yIntercept: 0 - params.supplyShift
+            slope: 1
+            drag: 
+              - horizontal: supplyShift
+            surplus: 
+              fill: red
+          equilibrium:
+            droplines:
+              vertical: "`Q_0 = ${calcs.ourEquilibrium.Q.toFixed(2)}`"
+              horizontal: "`P_0 = ${calcs.ourEquilibrium.P.toFixed(2)}`"
     </div>
 </body>
 </html>
