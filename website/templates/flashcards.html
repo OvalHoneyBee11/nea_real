@@ -15,10 +15,47 @@
     .question { font-size: 1.5em; font-weight: bold; }
     .answer { font-size: 1.2em; color: #28a745; margin-top: 1em; }
     .hidden { display: none; }
+
+     .progress-container {
+        max-width: 600px;
+        margin: 0 auto 1em;
+    }
+    .progress {
+        height: 25px;
+        background-color: #e9ecef;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    .progress-bar {
+        height: 100%;
+        background-color: #007bff;
+        transition: width 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+    }
+    .progress-text {
+        text-align: center;
+        margin-bottom: 0.5em;
+        font-size: 1.1em;
+        color: #333;
+    }
 </style>
 
 <h1>{{ question_set.name }}</h1>
-<p>Question <span id="current">1</span> of {{ questions_data|length }}</p>
+<div class="progress-container">
+    <div class="progress-text">
+        Question <span id="current">1</span> of {{ questions_data|length }} 
+        (<span id="percentage">0</span>% complete)
+    </div>
+    <div class="progress">
+        <div class="progress-bar" id="progressBar" style="width: 0%;">
+            <span id="progressBarText">0%</span>
+        </div>
+    </div>
+</div>
 
 <div class="flashcard">
     <div class="question" id="question"></div>
@@ -35,6 +72,13 @@
     const questions = {{ questions_data | tojson }};
     let i = 0;
 
+    function updateProgress() {
+        const percentage = Math.round(((i + 1) / questions.length) * 100);
+        document.getElementById('percentage').textContent = percentage;
+        document.getElementById('progressBar').style.width = percentage + '%';
+        document.getElementById('progressBarText').textContent = percentage + '%';
+    }
+
     function show() {
         document.getElementById('question').textContent = questions[i].question;
         document.getElementById('answer').textContent = questions[i].answer;
@@ -42,6 +86,7 @@
         document.getElementById('current').textContent = i + 1;
         document.getElementById('prev').disabled = i === 0;
         document.getElementById('next').disabled = i === questions.length - 1;
+        updateProgress();
     }
 
     function toggleAnswer() {
