@@ -1,110 +1,97 @@
 {% extends "base.html" %}
+
 {% block title %}Economic Simulator{% endblock %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KineticGraphs Economic Simulator</title>
-    
-    <link rel="stylesheet" href="http://kineticgraphs.org/css/kg.0.2.6.css">
-    <script src="http://kineticgraphs.org/js/kg.0.2.6.js"></script>
-    
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            color: #333;
-        }
-        .test-box {
-            background: #f0f0f0;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Economic Simulator</h1>
+<!-- Load KineticGraphs CSS and JS -->
+<link rel="stylesheet" href="https://kineticgraphs.org/css/kg.0.2.6.css">
+<script src="https://kineticgraphs.org/js/kg.0.2.6.js"></script>
 
-    <h2>Consumer and Producer surplus</h2>
-    
-    <!-- KineticGraph Container -->
-    <div class="kg-container">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    h1 {
+        color: #333;
+    }
+    .test-box {
+        background: #f0f0f0;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+    }
+</style>
+
+<h1>Economic Simulator</h1>
+
+<div class="test-box">
+    <p id="loadTest">Checking KineticGraphs...</p>
+</div>
+
+<script>
+  if (typeof KG !== 'undefined') {
+      document.getElementById('loadTest').innerHTML = '✓ KG JavaScript loaded successfully!';
+      document.getElementById('loadTest').style.color = 'green';
+  } else {
+      document.getElementById('loadTest').innerHTML = '✗ KG JavaScript NOT loaded.';
+      document.getElementById('loadTest').style.color = 'red';
+  }
+</script>
+
+<h2>Consumer and Producer Surplus</h2>
+
+<!-- KineticGraph Container -->
+<div class="kg-container">
+<script type="text/kg">
 schema: EconSchema
-params: 
-    - {name: demandShift, value: 0, min: -2, max: 2, round: 0.1}
-    - {name: supplyShift, value: 0, min: -2, max: 2, round: 0.1}
-calcs:
-    totalSurplus: (calcs.ourEquilibrium.demand.surplus + calcs.ourEquilibrium.supply.surplus)
+params:
+  - name: demandShift
+    value: 0
+    min: -2
+    max: 2
+    round: 0.1
+  - name: supplyShift
+    value: 0
+    min: -2
+    max: 2
+    round: 0.1
 layout:
-  OneGraphPlusSidebar:
+  OneGraph:
     graph:
       objects:
-      - EconLinearEquilibrium:
-          name: ourEquilibrium
-          demand: 
-            name: ourDemand
-            xIntercept: 8 + params.demandShift
-            invSlope: -1
-            drag: 
-            - horizontal: demandShift
-            surplus: 
-          supply: 
-            name: ourSupply
-            yIntercept: 0 - params.supplyShift
-            slope: 1
-            drag: 
-              - horizontal: supplyShift
-            surplus: 
-              fill: red
-          equilibrium:
-            droplines:
-              vertical: "`Q_0 = ${calcs.ourEquilibrium.Q.toFixed(2)}`"
-              horizontal: "`P_0 = ${calcs.ourEquilibrium.P.toFixed(2)}`"
-    sidebar:
-        controls:
-        - title: "Shift Demand Curve"
-          sliders:
-            - param: demandShift
-              label: D
-        - title: "Shift Supply Curve"
-          sliders:
-            - param: supplyShift
-              label: S
-      divs:
-        - html: "`
-            <div class='surplus-box'>
-              <h3>Equilibrium Values</h3>
-              <div class='label'>Price (P*)</div>
-              <div class='surplus-value equilibrium-value'>${calcs.ourEquilibrium.P.toFixed(2)}</div>
-              <div class='label'>Quantity (Q*)</div>
-              <div class='surplus-value equilibrium-value'>${calcs.ourEquilibrium.Q.toFixed(2)} units</div>
-            </div>
-            
-            <div class='surplus-box'>
-              <h3>Consumer Surplus</h3>
-              <div class='surplus-value consumer-surplus'>${calcs.ourEquilibrium.demand.surplus.toFixed(2)}</div>
-              <div class='label'>Area of green triangle</div>
-            </div>
-            
-            <div class='surplus-box'>
-              <h3>Producer Surplus</h3>
-              <div class='surplus-value producer-surplus'>${calcs.ourEquilibrium.supply.surplus.toFixed(2)}</div>
-              <div class='label'>Area of red triangle</div>
-            </div>
-            
-            <div class='surplus-box'>
-              <h3>Total Surplus</h3>
-              <div class='surplus-value total-surplus'>${calcs.totalSurplus.toFixed(2)}</div>
-              <div class='label'>Area of combined triangles</div>
-            </div>
-</body>
-</html>
+        - EconLinearEquilibrium:
+            name: ourEquilibrium
+            demand:
+              name: ourDemand
+              xIntercept: 8 + params.demandShift
+              invSlope: -1
+              drag:
+                - horizontal: demandShift
+              surplus: {}
+            supply:
+              name: ourSupply
+              yIntercept: 0 - params.supplyShift
+              slope: 1
+              drag:
+                - horizontal: supplyShift
+              surplus:
+                fill: red
+            equilibrium:
+              droplines:
+                vertical: "`Q_0 = ${calcs.ourEquilibrium.Q.toFixed(2)}`"
+                horizontal: "`P_0 = ${calcs.ourEquilibrium.P.toFixed(2)}`"
+</script>
+</div>
+
+<script>
+  window.addEventListener('load', function() {
+      console.log('Window loaded');
+      if (typeof KG !== 'undefined') {
+          console.log('KG is available');
+      }
+  });
+</script>
 {% endblock %}
