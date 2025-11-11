@@ -16,3 +16,7 @@ def home():
 def economic_stats():
     stats = get_stats()
     return render_template("economic_stats.html", stats=stats)
+
+@views.route('/test-kg')
+def test_kg():
+    return render_template('test_kg.html')
