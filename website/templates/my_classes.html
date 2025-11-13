@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}My Classes{% endblock %}
+
+{% block content %}
+<h1>My Classes</h1>
+
+<div style="margin-bottom: 2em;">
+    <a href="{{ url_for('classes.create_class') }}" class="btn btn-primary">Create New Class</a>
+    <a href="{{ url_for('classes.join_class') }}" class="btn btn-success">Join Class with Code</a>
+</div>
+
+{% if taught_classes %}
+<h2>Classes I Teach</h2>
+<div class="row">
+    {% for class in taught_classes %}
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ class.name }}</h5>
+                <p class="card-text">{{ class.description or "No description" }}</p>
+                <p class="text-muted">
+                    <strong>Class Code:</strong> <span class="badge badge-info">{{ class.code }}</span>
+                </p>
+                <p class="text-muted"><small>{{ class.memberships|length }} student(s) enrolled</small></p>
+                <a href="{{ url_for('classes.class_detail', class_id=class.id) }}" class="btn btn-primary btn-sm">View Class</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if enrolled_classes %}
+<h2>Classes I'm Taking</h2>
+<div class="row">
+    {% for class in enrolled_classes %}
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ class.name }}</h5>
+                <p class="card-text">{{ class.description or "No description" }}</p>
+                <p class="text-muted"><small>Teacher: {{ class.teacher.username }}</small></p>
+                <a href="{{ url_for('classes.class_detail', class_id=class.id) }}" class="btn btn-primary btn-sm">View Class</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if not taught_classes and not enrolled_classes %}
+<div class="alert alert-info">
+    <h4>Welcome to Classes!</h4>
+    <p>You haven't created or joined any classes yet.</p>
+    <ul>
+        <li><strong>Teachers:</strong> Click "Create New Class" to start a class</li>
+        <li><strong>Students:</strong> Click "Join Class with Code" and enter your teacher's class code</li>
+    </ul>
+</div>
+{% endif %}
+
+{% endblock %}

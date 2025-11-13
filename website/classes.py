@@ -90,7 +90,7 @@ def join_class():
                     flash(f"Successfully joined '{class_obj.name}'!", category="success")
                     return redirect(url_for("classes.class_detail", class_id=class_obj.id))
     
-    return render_template("join_class.html", user=current_user)
+    return render_template("join_classes.html", user=current_user)
 
 
 @classes.route("/class/<int:class_id>")
@@ -116,7 +116,7 @@ def class_detail(class_id):
     ).all()
     
     return render_template(
-        "class_detail_simple.html",
+        "class_detail.html",
         user=current_user,
         class_obj=class_obj,
         is_teacher=is_teacher,

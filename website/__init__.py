@@ -21,6 +21,7 @@ def create_app():
     from .sn import sn
     from .simulator import sim
     from .class_info import cls
+    from .classes import classes
 
     app.register_blueprint(sim, url_prefix="/sim")
     app.register_blueprint(cls, url_prefix="/cls")
@@ -28,6 +29,7 @@ def create_app():
     app.register_blueprint(auth, url_prefix="/auth")
     app.register_blueprint(tests, url_prefix="/tests")
     app.register_blueprint(sn, url_prefix="/sn")
+    app.register_blueprint(classes, url_prefix="/classes")
 
     from .models import User
 
