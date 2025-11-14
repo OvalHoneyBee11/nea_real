@@ -1,19 +1,16 @@
 {% extends "base.html" %}
-{% block title %}Join Class{% endblock %}
+{% block title %}Class Details{% endblock %}
 
 {% block content %}
-<h1>Join a Class</h1>
-
-<form method="POST">
-    <div class="form-group">
-        <label for="class_code">Class Code</label>
-        <input type="text" class="form-control" id="class_code" name="class_code" placeholder="Enter the 8-character class code" required style="text-transform: uppercase;">
-        <small class="form-text text-muted">Ask your teacher for the class code.</small>
-    </div>
-    
-    <br />
-    <button type="submit" class="btn btn-success">Join Class</button>
-    <a href="{{ url_for('classes.my_classes') }}" class="btn btn-secondary">Cancel</a>
-</form>
-
+<h1>{{ class_.name }}</h1>          
+<p>{{ class_.description }}</p>
+<p>Teacher: {{ class_.teacher.username }}</p>
+<h2>Students Enrolled</h2>
+<ul>
+    {% for student in class_.students %}
+        <li>{{ student.username }} ({{ student.email }})</li>
+    {% else %}
+        <li>No students enrolled yet.</li>
+    {% endfor %}
+</ul>
 {% endblock %}

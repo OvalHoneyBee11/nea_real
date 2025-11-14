@@ -115,10 +115,11 @@ def class_detail(class_id):
         ClassMembership.class_id == class_id
     ).all()
     
+    my_class = Class.query.get(class_id)
     return render_template(
         "class_detail.html",
         user=current_user,
-        class_obj=class_obj,
+        class_=my_class,       # changed: pass class_ not 'class'
         is_teacher=is_teacher,
         students=students
     )
