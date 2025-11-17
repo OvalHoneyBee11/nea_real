@@ -21,33 +21,72 @@
         }
         h1 {
             color: #333;
+            margin-bottom: 20px;
         }
-        .test-box {
-            background: #f0f0f0;
-            padding: 10px;
-            margin: 10px 0;
+        
+        /* Tab styling */
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
             border-radius: 5px;
+            cursor: pointer;
+            background-color: #6c757d;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        
+        .tab-button:hover {
+            background-color: #5a6268;
+        }
+        
+        .tab-button.active {
+            background-color: #007bff;
+        }
+        
+        /* Graph container styling */
+        .graph-container {
+            display: none;
+        }
+        
+        .graph-container.active {
+            display: block;
         }
     </style>
 </head>
 <body>
     <h1>Economic Simulator</h1>
-    <!-- KineticGraph Container -->
-    <div class="kg-container">
+    
+    <!-- Tab Buttons -->
+    <div class="tab-buttons">
+        <button class="tab-button active" onclick="showGraph('equilibrium')">Equilibrium Graph</button>
+        <button class="tab-button" onclick="showGraph('ppf')">PPF Graph</button>
+        <button class="tab-button" onclick="showGraph('monopoly')">Monopoly Graph</button>
+    </div>
+    
+    <!-- Graph 1: Supply & Demand Equilibrium -->
+    <div id="equilibrium" class="graph-container active">
+        <div class="kg-container">
 schema: EconSchema
 params: 
-  - {name: a, value: 2, min: 0, max: 5, round: 0.1}
-  - {name: b, value: 2, min: 0, max: 5, round: 0.1}
   - {name: demandShift, value: 0, min: -2, max: 2, round: 0.1}
   - {name: supplyShift, value: 0, min: -2, max: 2, round: 0.1}
 layout:
   OneGraphPlusSidebar:
     graph:
+      xAxis:
+        title: Quantity
+        max: 10
+      yAxis:
+        title: Price
+        max: 10
       objects:
-        - Line:
-            point: [params.a, params.b]
-            point2: [3, 3]
-            color: green
         - EconLinearEquilibrium:
             name: ourEquilibrium
             demand: 
@@ -56,7 +95,8 @@ layout:
               invSlope: -1
               drag: 
                 - horizontal: demandShift
-              surplus: {}
+              surplus: 
+                fill: blue
             supply: 
               name: ourSupply
               yIntercept: 0 - params.supplyShift
@@ -67,13 +107,203 @@ layout:
                 fill: red
             equilibrium:
               droplines:
-                vertical: "`Q_0 = ${calcs.ourEquilibrium.Q.toFixed(2)}`"
-                horizontal: "`P_0 = ${calcs.ourEquilibrium.P.toFixed(2)}`"
+                vertical: "`Q₀ = ${calcs.ourEquilibrium.Q.toFixed(2)}`"
+                horizontal: "`P₀ = ${calcs.ourEquilibrium.P.toFixed(2)}`"
     sidebar:
       controls:
       - title: Consumer And Producer Surplus 
-        description: This Graph show the Consumer and producer surplus at different levels of equilibrium.
+        description: This graph shows the consumer surplus (blue) and producer surplus (red) at equilibrium. Drag the curves to see how shifts affect the market.
+        sliders:
+        - param: demandShift
+          label: Demand Shift
+        - param: supplyShift
+          label: Supply Shift
+        </div>
     </div>
+    
+    <!-- Graph 2: Production Possibility Frontier -->
+    <div id="ppf" class="graph-container">
+        <div class="kg-container">
+schema: EconSchema
+params: 
+  - {name: maxGuns, value: 100, min: 50, max: 150, round: 10}
+  - {name: maxButter, value: 100, min: 50, max: 150, round: 10}
+  - {name: currentGuns, value: 50, min: 0, max: 100, round: 5}
+  - {name: techShift, value: 0, min: 0, max: 40, round: 5}
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis:
+        title: Guns
+        max: 160
+      yAxis:
+        title: Butter
+        max: 160
+      objects:
+        # Original PPF curve
+        - Curve:
+            fn: (params.maxButter) * Math.sqrt(1 - Math.pow((x)/(params.maxGuns), 2))
+            color: blue
+            strokeWidth: 3
+            label:
+              text: PPF
+              x: 80
+              y: 60
+        # PPF with technology improvement
+        - Curve:
+            fn: (params.maxButter + params.techShift) * Math.sqrt(1 - Math.pow((x)/(params.maxGuns + params.techShift), 2))
+            color: green
+            strokeWidth: 3
+            label:
+              text: "PPF (with tech)"
+              x: 100
+              y: 80
+            show: params.techShift > 0
+        # Current production point on the curve
+        - Point:
+            coordinates: [params.currentGuns, (params.maxButter) * Math.sqrt(1 - Math.pow((params.currentGuns)/(params.maxGuns), 2))]
+            color: red
+            r: 6
+            drag:
+              - horizontal: currentGuns
+            droplines:
+              vertical: "`Guns: ${params.currentGuns}`"
+              horizontal: "`Butter: ${((params.maxButter) * Math.sqrt(1 - Math.pow((params.currentGuns)/(params.maxGuns), 2))).toFixed(1)}`"
+        # Inefficient point (inside PPF)
+        - Point:
+            coordinates: [30, 30]
+            color: orange
+            r: 5
+            label:
+              text: Inefficient
+              position: br
+    sidebar:
+      controls:
+      - title: Production Possibility Frontier
+        description: Shows the trade-off between producing guns and butter. Points on the curve are efficient, inside is inefficient, outside is unattainable. Technology shifts expand the frontier.
+        sliders:
+        - param: currentGuns
+          label: Current Gun Production
+        - param: techShift
+          label: Technology Improvement
+        - param: maxGuns
+          label: Maximum Guns Capacity
+        - param: maxButter
+          label: Maximum Butter Capacity
+        </div>
+    </div>
+    
+    <!-- Graph 3: Monopoly Deadweight Loss -->
+    <div id="monopoly" class="graph-container">
+        <div class="kg-container">
+schema: EconSchema
+params: 
+  - {name: demandIntercept, value: 10, min: 8, max: 12, round: 0.5}
+  - {name: mc, value: 2, min: 1, max: 4, round: 0.5}
+calcs:
+  # Monopoly: MR = MC
+  qMonopoly: (params.demandIntercept - params.mc) / 2
+  pMonopoly: params.demandIntercept - calcs.qMonopoly
+  # Perfect competition: P = MC
+  qCompetitive: params.demandIntercept - params.mc
+  pCompetitive: params.mc
+layout:
+  OneGraphPlusSidebar:
+    graph:
+      xAxis:
+        title: Quantity
+        max: 12
+      yAxis:
+        title: Price
+        max: 12
+      objects:
+        # Demand curve
+        - Line:
+            name: demand
+            point: [0, params.demandIntercept]
+            point2: [params.demandIntercept, 0]
+            color: blue
+            strokeWidth: 2
+            label:
+              text: Demand
+              x: 8
+        # Marginal Revenue (twice as steep as demand)
+        - Line:
+            name: mr
+            point: [0, params.demandIntercept]
+            point2: [params.demandIntercept/2, 0]
+            color: purple
+            strokeWidth: 2
+            label:
+              text: MR
+              x: 3
+        # Marginal Cost (horizontal line)
+        - Line:
+            point: [0, params.mc]
+            point2: [12, params.mc]
+            color: red
+            strokeWidth: 2
+            label:
+              text: MC
+              x: 10
+        # Monopoly equilibrium point
+        - Point:
+            coordinates: [calcs.qMonopoly, calcs.pMonopoly]
+            color: darkred
+            r: 6
+            droplines:
+              vertical: "`Q_m = ${calcs.qMonopoly.toFixed(2)}`"
+              horizontal: "`P_m = ${calcs.pMonopoly.toFixed(2)}`"
+        # Competitive equilibrium point
+        - Point:
+            coordinates: [calcs.qCompetitive, calcs.pCompetitive]
+            color: darkgreen
+            r: 6
+            droplines:
+              vertical: "`Q_c = ${calcs.qCompetitive.toFixed(2)}`"
+              horizontal: "`P_c = ${calcs.pCompetitive.toFixed(2)}`"
+        # Deadweight loss triangle
+        - Polygon:
+            points: [[calcs.qMonopoly, calcs.pMonopoly], [calcs.qMonopoly, params.mc], [calcs.qCompetitive, params.mc]]
+            fill: yellow
+            opacity: 0.5
+            label:
+              text: DWL
+              x: (calcs.qMonopoly + calcs.qCompetitive) / 2
+              y: (calcs.pMonopoly + params.mc) / 2
+    sidebar:
+      controls:
+      - title: Monopoly vs Perfect Competition
+        description: Compares monopoly outcome (red point) with competitive outcome (green point). The yellow triangle shows deadweight loss from monopoly pricing.
+        sliders:
+        - param: demandIntercept
+          label: Demand Intercept
+        - param: mc
+          label: Marginal Cost
+        </div>
+    </div>
+
+    <script>
+        function showGraph(graphId) {
+            // Hide all graphs
+            const containers = document.querySelectorAll('.graph-container');
+            containers.forEach(container => {
+                container.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected graph
+            document.getElementById(graphId).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+    </script>
 </body>
 </html>
 {% endblock %}
