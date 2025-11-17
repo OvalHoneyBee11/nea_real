@@ -5,10 +5,17 @@
 <h1>{{ class_.name }}</h1>          
 <p>{{ class_.description }}</p>
 <p>Teacher: {{ class_.teacher.username }}</p>
+
+<div class="mb-3">
+    <a href="{{ url_for('classes.class_chat', class_id=class_.id) }}" class="btn btn-success">
+        Class Chat
+    </a>
+</div>
+
 <h2>Students Enrolled</h2>
 <ul>
-    {% for student in class_.students %}
-        <li>{{ student.username }} ({{ student.email }})</li>
+    {% for student in students %}
+        <li>{{ student.username }}</li>
     {% else %}
         <li>No students enrolled yet.</li>
     {% endfor %}

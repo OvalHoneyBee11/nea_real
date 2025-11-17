@@ -14,11 +14,21 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
+    role = db.Column(db.String(20), nullable=False, default="student")   # <--- new
     tasks = db.relationship("Task", backref="user", lazy=True)
     questions = db.relationship("Question", backref="user", lazy=True)
     question_sets = db.relationship("QuestionSet", backref="user", lazy=True)   
     taught_classes = db.relationship("Class", backref="teacher", lazy=True, foreign_keys="Class.teacher_id")
     class_memberships = db.relationship("ClassMembership", backref="user", lazy=True)
+
+    @property
+    def is_teacher(self):
+        return self.role == "teacher"
+
+    @property
+    def is_student(self):
+        return self.role == "student"
+    
 
 class Class(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -62,3 +72,12 @@ class Answer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     answer = db.Column(db.String(500), nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey("question.id"))
+    
+class ChatMessage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String(1000), nullable=False)
+    timestamp = db.Column(db.DateTime(timezone=True), default=db.func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    class_id = db.Column(db.Integer, db.ForeignKey("class.id"), nullable=False)
+    user = db.relationship("User", backref="chat_messages")
+    class_obj = db.relationship("Class", backref="chat_messages")

@@ -35,6 +35,7 @@ def sign_up():
         username = request.form.get("username")
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
+        role = request.form.get("role", "student")
 
         user = User.query.filter_by(username=username).first()
         if user:
@@ -51,6 +52,7 @@ def sign_up():
             new_user = User(
                 username=username,
                 password=generate_password_hash(password1, method="pbkdf2:sha256"),
+                role=role,
             )
             db.session.add(new_user)
             db.session.commit()

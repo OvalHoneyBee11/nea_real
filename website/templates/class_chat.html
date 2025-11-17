@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}{{ class_.name }} - Chat{% endblock %}
+
+{% block content %}
+<h1>{{ class_.name }} - Class Chat</h1>
+<p class="text-muted">Teacher: {{ class_.teacher.username }}</p>
+
+<a href="{{ url_for('classes.class_detail', class_id=class_.id) }}" class="btn btn-secondary btn-sm mb-3">
+    ← Back to Class
+</a>
+
+<style>
+    .chat-container {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        max-width: 800px;
+        margin: 20px auto;
+        background-color: #f9f9f9;
+    }
+    
+    .messages-area {
+        height: 400px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 15px;
+        background-color: white;
+        margin-bottom: 20px;
+    }
+    
+    .message {
+        margin-bottom: 15px;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #f0f0f0;
+    }
+    
+    .message.own-message {
+        background-color: #d4edff;
+        margin-left: 20px;
+    }
+    
+    .message.teacher-message {
+        border-left: 4px solid #007bff;
+    }
+    
+    .message-header {
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #333;
+    }
+    
+    .message-time {
+        font-size: 0.8em;
+        color: #666;
+        margin-left: 10px;
+    }
+    
+    .message-text {
+        color: #222;
+        word-wrap: break-word;
+    }
+    
+    .chat-form {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .chat-form textarea {
+        flex-grow: 1;
+        resize: vertical;
+        min-height: 60px;
+    }
+</style>
+
+<div class="chat-container">
+    <div class="messages-area" id="messagesArea">
+        {% if messages %}
+            {% for msg in messages %}
+            <div class="message {% if msg.user_id == user.id %}own-message{% endif %} {% if msg.user_id == class_.teacher_id %}teacher-message{% endif %}">
+                <div class="message-header">
+                    {{ msg.user.username }}
+                    {% if msg.user_id == class_.teacher_id %}
+                        <span class="badge badge-primary">Teacher</span>
+                    {% endif %}
+                    <span class="message-time">
+                        {{ msg.timestamp.strftime('%b %d, %Y at %I:%M %p') }}
+                    </span>
+                </div>
+                <div class="message-text">{{ msg.message }}</div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted text-center">No messages yet. Be the first to say something!</p>
+        {% endif %}
+    </div>
+    
+    <form method="POST" class="chat-form">
+        <textarea 
+            class="form-control" 
+            name="message" 
+            placeholder="Type your message here..." 
+            required
+            maxlength="1000"
+        ></textarea>
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+    <small class="text-muted">Maximum 1000 characters</small>
+</div>
+
+<script>
+    // Auto-scroll to the bottom of messages
+    window.onload = function() {
+        var messagesArea = document.getElementById('messagesArea');
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+    };
+</script>
+
+{% endblock %}

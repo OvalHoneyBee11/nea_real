@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import Class, ClassMembership, User
+from .models import Class, ClassMembership, User, ChatMessage
 from . import db
 from flask_login import login_required, current_user
+
 
 classes = Blueprint("classes", __name__)
 
@@ -122,4 +123,48 @@ def class_detail(class_id):
         class_=my_class,       # changed: pass class_ not 'class'
         is_teacher=is_teacher,
         students=students
+    )
+@classes.route("/class/<int:class_id>/chat", methods=["GET", "POST"])
+@login_required
+def class_chat(class_id):
+    """Class chat room for teachers and students"""
+    class_obj = Class.query.get_or_404(class_id)
+    
+    # Check if user has access to this class
+    is_teacher = class_obj.teacher_id == current_user.id
+    is_student = ClassMembership.query.filter_by(
+        user_id=current_user.id,
+        class_id=class_id
+    ).first() is not None
+    
+    if not (is_teacher or is_student):
+        flash("You don't have access to this class.", category="error")
+        return redirect(url_for("classes.my_classes"))
+    
+    # Handle new message submission
+    if request.method == "POST":
+        message_text = request.form.get("message")
+        
+        if not message_text or not message_text.strip():
+            flash("Message cannot be empty.", category="error")
+        else:
+            new_message = ChatMessage(
+                message=message_text.strip(),
+                user_id=current_user.id,
+                class_id=class_id
+            )
+            db.session.add(new_message)
+            db.session.commit()
+            flash("Message sent!", category="success")
+            return redirect(url_for("classes.class_chat", class_id=class_id))
+    
+    # Get all messages for this class
+    messages = ChatMessage.query.filter_by(class_id=class_id).order_by(ChatMessage.timestamp.asc()).all()
+    
+    return render_template(
+        "class_chat.html",
+        user=current_user,
+        class_=class_obj,
+        messages=messages,
+        is_teacher=is_teacher
     )
