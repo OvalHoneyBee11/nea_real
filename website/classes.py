@@ -168,3 +168,13 @@ def class_chat(class_id):
         messages=messages,
         is_teacher=is_teacher
     )
+
+
+@classes.route("/portal/classes")
+@login_required
+def class_portal():
+    """Minimal preview for home page iframe"""
+    user_classes = Class.query.join(ClassMembership).filter(
+        ClassMembership.user_id == current_user.id
+    ).limit(3).all()
+    return render_template("portals/class_portal.html", classes=user_classes)

@@ -92,6 +92,12 @@ def get_stats():
         country=country.capitalize()
     )
 
+@sn.route("/portal/stats")
+@login_required
+def stats_portal():
+    """Minimal preview for home page iframe"""
+    return render_template("portals/stats_portal.html")
+
 def create_dataframe(stats_data):
     df = pd.DataFrame(stats_data)
     df['DateTime'] = pd.to_datetime(df['DateTime'], format='mixed', utc=True)
