@@ -29,26 +29,27 @@ def my_classes():
 @classes.route("/create_class", methods=["GET", "POST"])
 @login_required
 def create_class():
-    """Create a new class (teacher)"""
+    # Only teachers can create classes
+    if not current_user.is_teacher:
+        flash("Only teachers can create classes.", "danger")
+        return redirect(url_for("views.home"))
+    
     if request.method == "POST":
-        class_name = request.form.get("class_name")
+        name = request.form.get("name")
         description = request.form.get("description")
         
-        if not class_name:
-            flash("Class name cannot be empty.", category="error")
+        if not name:
+            flash("Class name is required.", "warning")
         else:
-            # Create the class
             new_class = Class(
-                name=class_name,
+                name=name,
                 description=description,
-                code=Class.generate_code(),
                 teacher_id=current_user.id
             )
             db.session.add(new_class)
             db.session.commit()
-            
-            flash(f"Class '{class_name}' created successfully! Class code: {new_class.code}", category="success")
-            return redirect(url_for("classes.class_detail", class_id=new_class.id))
+            flash("Class created successfully!", "success")
+            return redirect(url_for("classes.my_classes"))
     
     return render_template("create_class.html", user=current_user)
 
@@ -169,12 +170,26 @@ def class_chat(class_id):
         is_teacher=is_teacher
     )
 
-
-@classes.route("/portal/classes")
+@classes.route("/class/<int:class_id>/delete", methods=["POST"])
 @login_required
-def class_portal():
-    """Minimal preview for home page iframe"""
-    user_classes = Class.query.join(ClassMembership).filter(
-        ClassMembership.user_id == current_user.id
-    ).limit(3).all()
-    return render_template("portals/class_portal.html", classes=user_classes)
+def delete_class(class_id):
+    """Delete a class (teacher only)"""
+    class_obj = Class.query.get_or_404(class_id)
+    
+    # Only the teacher who created the class can delete it
+    if class_obj.teacher_id != current_user.id:
+        flash("Only the class teacher can delete this class.", "danger")
+        return redirect(url_for("classes.class_detail", class_id=class_id))
+    
+    # Delete all memberships first
+    ClassMembership.query.filter_by(class_id=class_id).delete()
+    
+    # Delete all chat messages
+    ChatMessage.query.filter_by(class_id=class_id).delete()
+    
+    # Delete the class
+    db.session.delete(class_obj)
+    db.session.commit()
+    
+    flash(f"Class '{class_obj.name}' has been deleted.", "success")
+    return redirect(url_for("classes.my_classes"))

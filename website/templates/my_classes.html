@@ -5,7 +5,9 @@
 <h1>My Classes</h1>
 
 <div style="margin-bottom: 2em;">
-    <a href="{{ url_for('classes.create_class') }}" class="btn btn-primary">Create New Class</a>
+    {% if user.is_teacher %}
+    <a href="{{ url_for('classes.create_class') }}" class="btn btn-success">Create New Class</a>
+    {% endif %}
     <a href="{{ url_for('classes.join_class') }}" class="btn btn-success">Join Class with Code</a>
 </div>
 

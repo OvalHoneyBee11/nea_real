@@ -20,4 +20,12 @@
         <li>No students enrolled yet.</li>
     {% endfor %}
 </ul>
+
+{% if is_teacher %}
+    <div style="margin-top: 2rem;">
+        <form method="POST" action="{{ url_for('classes.delete_class', class_id=class_.id) }}" onsubmit="return confirm('Are you sure you want to delete this class? This cannot be undone.');">
+            <button type="submit" class="btn btn-danger">Delete Class</button>
+        </form>
+    </div>
+{% endif %}
 {% endblock %}
