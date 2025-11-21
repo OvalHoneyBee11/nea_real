@@ -230,6 +230,7 @@ params:
   - {name: demandIntercept, value: 10, min: 8, max: 12, round: 0.5}
   - {name: mc, value: 2, min: 1, max: 4, round: 0.5}
   - {name: mcShift, value: 0, min: -2, max: 2, round: 0.1}
+  - {name: acShift, value: 0, min: -2, max: 2, round: 0.1}
 calcs:
   qMonopoly: (params.demandIntercept - params.mc) / 2
   pMonopoly: params.demandIntercept - calcs.qMonopoly
@@ -270,6 +271,18 @@ layout:
               label:
                 text: MC
                 x: 4
+        - Curve:
+            fn: 3 + 4/(x+0.5) + 0.15*((x-4))^2
+            min: 1.2
+            max: 9
+            color: orange
+            strokeWidth: 2
+            label:
+              text: AC
+              x: 5
+              y: 3.2
+            drag :
+              - vertical: acShift
     sidebar:
       controls:
       - title: Monopoly vs Perfect Competition
@@ -277,6 +290,8 @@ layout:
         sliders:
         - param: demandIntercept
           label: Demand Intercept
+        - param: acShift
+          label: Average Cost Shift
         </div>
     </div>
     
