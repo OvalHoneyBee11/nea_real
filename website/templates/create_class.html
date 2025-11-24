@@ -6,16 +6,16 @@
 
 <form method="POST">
     <div class="form-group">
-        <label for="class_name">Class Name</label>
-        <input type="text" class="form-control" id="class_name" name="class_name" placeholder="e.g., Economics 101" required>
+        <label for="name">Class Name</label>
+        <input type="text" class="form-control" id="name" name="name" required>
     </div>
     
     <div class="form-group">
-        <label for="description">Description (Optional)</label>
-        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter a description for your class"></textarea>
+        <label for="description">Description</label>
+        <textarea class="form-control" id="description" name="description" rows="4"></textarea>
     </div>
     
-    <br />
+    <br>
     <button type="submit" class="btn btn-primary">Create Class</button>
     <a href="{{ url_for('classes.my_classes') }}" class="btn btn-secondary">Cancel</a>
 </form>

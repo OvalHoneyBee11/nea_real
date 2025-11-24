@@ -7,9 +7,11 @@
 <p>Teacher: {{ class_.teacher.username }}</p>
 
 <div class="mb-3">
-    <a href="{{ url_for('classes.class_chat', class_id=class_.id) }}" class="btn btn-success">
-        Class Chat
-    </a>
+    <a href="{{ url_for('classes.class_chat', class_id=class_.id) }}" class="btn btn-success">Class Chat</a>
+    <a href="{{ url_for('classes.view_assignments', class_id=class_.id) }}" class="btn btn-info">Assignments</a>
+    {% if is_teacher %}
+        <a href="{{ url_for('classes.create_assignment', class_id=class_.id) }}" class="btn btn-primary">Create Assignment</a>
+    {% endif %}
 </div>
 
 <h2>Students Enrolled</h2>

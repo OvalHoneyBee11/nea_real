@@ -72,7 +72,7 @@ class Answer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     answer = db.Column(db.String(500), nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey("question.id"))
-    
+
 class ChatMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String(1000), nullable=False)
@@ -81,3 +81,17 @@ class ChatMessage(db.Model):
     class_id = db.Column(db.Integer, db.ForeignKey("class.id"), nullable=False)
     user = db.relationship("User", backref="chat_messages")
     class_obj = db.relationship("Class", backref="chat_messages")
+
+class Assignment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text)
+    due_date = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    class_id = db.Column(db.Integer, db.ForeignKey("class.id"), nullable=False)
+    creator_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    attachment_url = db.Column(db.String(500))
+    
+    # Relationships
+    creator = db.relationship("User", backref="created_assignments")
+    class_obj = db.relationship("Class", backref="assignments")

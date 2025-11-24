@@ -1,7 +1,10 @@
+import random
+import string
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import Class, ClassMembership, User, ChatMessage
+from .models import Class, ClassMembership, User, ChatMessage, Assignment
 from . import db
 from flask_login import login_required, current_user
+from datetime import datetime
 
 
 classes = Blueprint("classes", __name__)
@@ -41,14 +44,22 @@ def create_class():
         if not name:
             flash("Class name is required.", "warning")
         else:
+            # Generate a unique 6-character class code
+            code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+            
+            # Ensure code is unique
+            while Class.query.filter_by(code=code).first():
+                code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+            
             new_class = Class(
                 name=name,
                 description=description,
-                teacher_id=current_user.id
+                teacher_id=current_user.id,
+                code=code
             )
             db.session.add(new_class)
             db.session.commit()
-            flash("Class created successfully!", "success")
+            flash(f"Class created successfully! Class code: {code}", "success")
             return redirect(url_for("classes.my_classes"))
     
     return render_template("create_class.html", user=current_user)
@@ -187,9 +198,100 @@ def delete_class(class_id):
     # Delete all chat messages
     ChatMessage.query.filter_by(class_id=class_id).delete()
     
+    # Delete all assignments
+    Assignment.query.filter_by(class_id=class_id).delete()
+    
     # Delete the class
     db.session.delete(class_obj)
     db.session.commit()
     
     flash(f"Class '{class_obj.name}' has been deleted.", "success")
     return redirect(url_for("classes.my_classes"))
+
+@classes.route("/class/<int:class_id>/assignments")
+@login_required
+def view_assignments(class_id):
+    """View all assignments for a class"""
+    class_obj = Class.query.get_or_404(class_id)
+    
+    # Check access
+    is_teacher = class_obj.teacher_id == current_user.id
+    is_student = ClassMembership.query.filter_by(
+        user_id=current_user.id,
+        class_id=class_id
+    ).first() is not None
+    
+    if not (is_teacher or is_student):
+        flash("You don't have access to this class.", "error")
+        return redirect(url_for("classes.my_classes"))
+    
+    assignments = Assignment.query.filter_by(class_id=class_id).order_by(Assignment.due_date).all()
+    
+    return render_template(
+        "assignments.html",
+        user=current_user,
+        class_=class_obj,
+        assignments=assignments,
+        is_teacher=is_teacher
+    )
+
+
+@classes.route("/class/<int:class_id>/assignments/create", methods=["GET", "POST"])
+@login_required
+def create_assignment(class_id):
+    """Create a new assignment (teacher only)"""
+    class_obj = Class.query.get_or_404(class_id)
+    
+    # Only teacher can create assignments
+    if class_obj.teacher_id != current_user.id:
+        flash("Only the teacher can create assignments.", "danger")
+        return redirect(url_for("classes.view_assignments", class_id=class_id))
+    
+    if request.method == "POST":
+        title = request.form.get("title")
+        description = request.form.get("description")
+        due_date_str = request.form.get("due_date")
+        attachment_url = request.form.get("attachment_url")
+        
+        if not title:
+            flash("Assignment title is required.", "warning")
+        else:
+            due_date = None
+            if due_date_str:
+                try:
+                    due_date = datetime.strptime(due_date_str, "%Y-%m-%d")
+                except ValueError:
+                    flash("Invalid date format. Use YYYY-MM-DD.", "warning")
+                    return render_template("create_assignment.html", user=current_user, class_=class_obj)
+            
+            new_assignment = Assignment(
+                title=title,
+                description=description,
+                due_date=due_date,
+                class_id=class_id,
+                creator_id=current_user.id,
+                attachment_url=attachment_url
+            )
+            db.session.add(new_assignment)
+            db.session.commit()
+            flash("Assignment created successfully!", "success")
+            return redirect(url_for("classes.view_assignments", class_id=class_id))
+    
+    return render_template("create_assignment.html", user=current_user, class_=class_obj)
+
+
+@classes.route("/class/<int:class_id>/assignments/<int:assignment_id>/delete", methods=["POST"])
+@login_required
+def delete_assignment(class_id, assignment_id):
+    """Delete an assignment (teacher only)"""
+    assignment = Assignment.query.get_or_404(assignment_id)
+    class_obj = Class.query.get_or_404(class_id)
+    
+    if class_obj.teacher_id != current_user.id:
+        flash("Only the teacher can delete assignments.", "danger")
+        return redirect(url_for("classes.view_assignments", class_id=class_id))
+    
+    db.session.delete(assignment)
+    db.session.commit()
+    flash("Assignment deleted.", "success")
+    return redirect(url_for("classes.view_assignments", class_id=class_id))

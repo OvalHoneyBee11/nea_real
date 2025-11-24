@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Create Assignment{% endblock %}
+
+{% block content %}
+<h1>Create Assignment for {{ class_.name }}</h1>
+
+<form method="POST">
+    <div class="form-group">
+        <label for="title">Assignment Title</label>
+        <input type="text" class="form-control" id="title" name="title" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="description">Description</label>
+        <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+    </div>
+    
+    <div class="form-group">
+        <label for="due_date">Due Date (optional)</label>
+        <input type="date" class="form-control" id="due_date" name="due_date">
+    </div>
+    
+    <div class="form-group">
+        <label for="attachment_url">Attachment URL (optional)</label>
+        <input type="text" class="form-control" id="attachment_url" name="attachment_url" placeholder="https://...">
+    </div>
+    
+    <br>
+    <button type="submit" class="btn btn-primary">Create Assignment</button>
+    <a href="{{ url_for('classes.view_assignments', class_id=class_.id) }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Assignments - {{ class_.name }}{% endblock %}
+
+{% block content %}
+<h1>Assignments for {{ class_.name }}</h1>
+
+{% if is_teacher %}
+    <a href="{{ url_for('classes.create_assignment', class_id=class_.id) }}" class="btn btn-primary" style="margin-bottom:1rem;">Create New Assignment</a>
+{% endif %}
+
+{% if assignments %}
+    <div style="margin-top:1rem;">
+    {% for assignment in assignments %}
+        <div style="border:1px solid #ddd; padding:1rem; margin-bottom:1rem; border-radius:4px;">
+            <h3 style="margin:0 0 0.5rem 0;">{{ assignment.title }}</h3>
+            {% if assignment.due_date %}
+                <p style="margin:0 0 0.5rem 0; color:#666;">
+                    <strong>Due:</strong> {{ assignment.due_date.strftime('%B %d, %Y') }}
+                </p>
+            {% endif %}
+            {% if assignment.description %}
+                <p style="margin:0 0 0.5rem 0;">{{ assignment.description }}</p>
+            {% endif %}
+            {% if assignment.attachment_url %}
+                <p style="margin:0 0 0.5rem 0;">
+                    <a href="{{ assignment.attachment_url }}" target="_blank">📎 View Attachment</a>
+                </p>
+            {% endif %}
+            <p style="margin:0; font-size:0.85rem; color:#888;">
+                Created by {{ assignment.creator.username }} on {{ assignment.created_at.strftime('%B %d, %Y') }}
+            </p>
+            
+            {% if is_teacher %}
+                <form method="POST" action="{{ url_for('classes.delete_assignment', class_id=class_.id, assignment_id=assignment.id) }}" style="margin-top:0.5rem;" onsubmit="return confirm('Delete this assignment?');">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            {% endif %}
+        </div>
+    {% endfor %}
+    </div>
+{% else %}
+    <p>No assignments yet.</p>
+{% endif %}
+
+<a href="{{ url_for('classes.class_detail', class_id=class_.id) }}" class="btn btn-secondary">Back to Class</a>
+{% endblock %}
