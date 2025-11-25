@@ -62,8 +62,7 @@
                     <ul>
                         {% for q in qs.questions %}
                             <li>
-                                <strong>Q:</strong> {{ q.question }} — 
-                                <strong>A:</strong> <em>{{ q.answers[0].answer if q.answers else 'No answer' }}</em>
+                                <strong>Q:</strong> {{ q.question }}
                             </li>
                         {% endfor %}
                     </ul>
