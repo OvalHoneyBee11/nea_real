@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 import requests
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd 
 import os
 

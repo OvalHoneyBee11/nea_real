@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from .models import Class, ClassMembership, QuestionSet
 from .sn import get_stats
@@ -23,6 +23,23 @@ def home():
     
     return render_template("home.html", user=current_user, user_classes=user_classes, user_question_sets=user_question_sets)
    
+@views.route("/flashcards")
+@login_required
+def flashcards():
+    set_id = request.args.get("set_id")
+    question_set = None
+    questions = []
+    
+    if set_id:
+        question_set = QuestionSet.query.get_or_404(int(set_id))
+        if question_set.user_id == current_user.id:
+            questions = question_set.questions
+        else:
+            flash("You don't have access to this question set.", "danger")
+            return redirect(url_for("views.home"))
+    
+    return render_template("flashcards.html", user=current_user, question_set=question_set, questions=questions)
+
 @views.route("/economic-stats")
 def economic_stats():
     stats = get_stats()

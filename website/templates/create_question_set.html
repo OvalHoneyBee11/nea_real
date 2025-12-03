@@ -3,17 +3,16 @@
 
 {% block content %}
 <h1>Create a New Question Set</h1>
+
 <form method="POST">
     <div class="form-group">
-        <label for="set_name">Set Name</label>
-        <input type="text" class="form-control" id="set_name" name="set_name" placeholder="Enter set name" required>
+        <label for="set_name">Question Set Name</label>
+        <input type="text" class="form-control" id="set_name" name="set_name" value="{{ set_name or '' }}" required>
+        <small class="form-text text-muted">Each question set name must be unique.</small>
     </div>
-    <div class="form-group">
-        <label for="set_description">Description (Optional)</label>
-        <textarea class="form-control" id="set_description" name="set_description" placeholder="Enter description" rows="3"></textarea>
-    </div>
-    <br />
-    <button type="submit" class="btn btn-primary">Create</button>
+    
+    <br>
+    <button type="submit" class="btn btn-primary">Create Question Set</button>
     <a href="{{ url_for('tests.question_sets') }}" class="btn btn-secondary">Cancel</a>
 </form>
 {% endblock %}

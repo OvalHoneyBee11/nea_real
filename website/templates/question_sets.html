@@ -9,21 +9,6 @@
     <button type="button" class="btn btn-primary" style="margin-bottom: 1em;">Create New Question Set</button>
 </a>
 
-<!-- Dropdown to select a question set -->
-{% if question_sets %}
-    <form method="get" action="{{ url_for('tests.question_sets') }}" style="margin-bottom: 1em;">
-        <label for="selected_set">Select a Question Set:</label>
-        <select name="selected_set" id="selected_set" onchange="this.form.submit()">
-            <option value="">-- Select --</option>
-            {% for qs in question_sets %}
-                <option value="{{ qs.id }}" {% if selected_set and selected_set.id == qs.id %}selected{% endif %}>
-                    {{ qs.name }}
-                </option>
-            {% endfor %}
-        </select>
-    </form>
-{% endif %}
-
 <!-- Display selected question set or all sets -->
 {% if selected_set %}
     <h2>{{ selected_set.name }}</h2>

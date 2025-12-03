@@ -73,32 +73,31 @@ def question_sets():
 def create_question_set():
     if request.method == "POST":
         set_name = request.form.get("set_name")
-        set_description = request.form.get("set_description")
         
         if not set_name:
-            flash("Set name cannot be empty.", category="error")
-        else:
-            # Check if set name already exists for this user
-            existing_set = QuestionSet.query.filter_by(
-                name=set_name, 
-                user_id=current_user.id
-            ).first()
-            
-            if existing_set:
-                flash("A question set with this name already exists.", category="error")
-            else:
-                new_set = QuestionSet(
-                    name=set_name, 
-                    description=set_description, 
-                    user_id=current_user.id
-                )
-                db.session.add(new_set)
-                db.session.commit()
-                flash("Question set created successfully!", category="success")
-                # Redirect to add questions to this new set
-                return redirect(url_for("tests.questions", set_id=new_set.id))
-
-    return render_template("create_question_set.html", user=current_user)
+            flash("Question set name is required.", "warning")
+            return render_template("create_question_set.html")
+        
+        # Check if question set with same name already exists for this user
+        existing_set = QuestionSet.query.filter_by(
+            name=set_name,
+            user_id=current_user.id
+        ).first()
+        
+        if existing_set:
+            flash(f"You already have a question set named '{set_name}'. Please choose a different name.", "warning")
+            return render_template("create_question_set.html", set_name=set_name)
+        
+        new_set = QuestionSet(
+            name=set_name,
+            user_id=current_user.id
+        )
+        db.session.add(new_set)
+        db.session.commit()
+        flash(f"Question set '{set_name}' created successfully!", "success")
+        return redirect(url_for("tests.question_sets"))
+    
+    return render_template("create_question_set.html")
 
 
 @tests.route("/flashcards/<int:set_id>", methods=["GET"])

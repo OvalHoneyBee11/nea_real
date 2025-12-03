@@ -38,29 +38,36 @@ def create_class():
         return redirect(url_for("views.home"))
     
     if request.method == "POST":
-        name = request.form.get("name")
+        name = request.form.get("name", "").strip()
         description = request.form.get("description")
         
         if not name:
             flash("Class name is required.", "warning")
-        else:
-            # Generate a unique 6-character class code
+            return render_template("create_class.html", user=current_user, name=name, description=description)
+        
+        # Prevent duplicate class names for the same teacher
+        existing_class = Class.query.filter_by(name=name, teacher_id=current_user.id).first()
+        if existing_class:
+            flash(f"You already have a class named '{name}'. Please choose a different name.", "warning")
+            return render_template("create_class.html", user=current_user, name=name, description=description)
+        
+        # Generate a unique 6-character class code
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        
+        # Ensure code is unique
+        while Class.query.filter_by(code=code).first():
             code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-            
-            # Ensure code is unique
-            while Class.query.filter_by(code=code).first():
-                code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-            
-            new_class = Class(
-                name=name,
-                description=description,
-                teacher_id=current_user.id,
-                code=code
-            )
-            db.session.add(new_class)
-            db.session.commit()
-            flash(f"Class created successfully! Class code: {code}", "success")
-            return redirect(url_for("classes.my_classes"))
+        
+        new_class = Class(
+            name=name,
+            description=description,
+            teacher_id=current_user.id,
+            code=code
+        )
+        db.session.add(new_class)
+        db.session.commit()
+        flash(f"Class created successfully! Class code: {code}", "success")
+        return redirect(url_for("classes.my_classes"))
     
     return render_template("create_class.html", user=current_user)
 

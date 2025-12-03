@@ -48,7 +48,7 @@ def sign_up():
             flash("Username must be at least 3 characters long!", category="error")
         if len(password1) < 6:
             flash("Password must be at least 6 characters long!", category="error")
-        else:
+        if len(username) >= 4 and len(password1) >= 6 and password1 == password2:
             new_user = User(
                 username=username,
                 password=generate_password_hash(password1, method="pbkdf2:sha256"),
