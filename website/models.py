@@ -3,24 +3,14 @@ from flask_login import UserMixin
 import string
 import random
 
-class Task(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.String(1500))
-    date = db.Column(db.DateTime(timezone=True), default=db.func.now())
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-
-
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
-    role = db.Column(db.String(20), nullable=False, default="student")   # <--- new
-    tasks = db.relationship("Task", backref="user", lazy=True)
-    questions = db.relationship("Question", backref="user", lazy=True)
+    role = db.Column(db.String(20), nullable=False, default="student") 
     question_sets = db.relationship("QuestionSet", backref="user", lazy=True)   
     taught_classes = db.relationship("Class", backref="teacher", lazy=True, foreign_keys="Class.teacher_id")
-    class_memberships = db.relationship("ClassMembership", backref="user", lazy=True)
-
+    
     @property
     def is_teacher(self):
         return self.role == "teacher"
@@ -28,7 +18,7 @@ class User(db.Model, UserMixin):
     @property
     def is_student(self):
         return self.role == "student"
-    
+        
 
 class Class(db.Model):
     id = db.Column(db.Integer, primary_key=True)
