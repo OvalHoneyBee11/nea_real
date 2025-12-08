@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 import requests
 import matplotlib.pyplot as plt
-import pandas as pd 
+import pandas as pd
 import os
 
 sn = Blueprint("sn", __name__)
@@ -57,8 +57,8 @@ def get_stats():
                 stats_data = []
             stats_data = stats_data[:-1]
             if stats_data and len(stats_data) > 0:
-                df = create_dataframe(stats_data)
-                gdp_plot_filename = plot_gdp_trend(df, country)
+                data_frame = create_dataframe(stats_data)
+                gdp_plot_filename = plot_gdp_trend(data_frame, country)
         except Exception as e:
             print("Error parsing JSON:", e)
             stats_data = []
@@ -72,12 +72,12 @@ def get_stats():
     total = len(stats_data)
 
     # Create DataFrame for all data and for the current page
-    df = create_dataframe(stats_data)
-    df_page = create_dataframe(paged_stats)
+    data_frame = create_dataframe(stats_data)
+    data_frame_page = create_dataframe(paged_stats)
 
     # Plot the full graph and the page graph
-    gdp_plot_filename = plot_gdp_trend(df, country)
-    gdp_plot_page_filename = plot_gdp_page(df_page, country)
+    gdp_plot_filename = plot_gdp_trend(data_frame, country)
+    gdp_plot_page_filename = plot_gdp_page(data_frame_page, country)
 
     return render_template(
         "stats.html",
@@ -88,8 +88,9 @@ def get_stats():
         page=page,
         per_page=per_page,
         total=total,
-        country=country.capitalize()
+        country=country.capitalize(),
     )
+
 
 @sn.route("/portal/stats")
 @login_required
@@ -97,37 +98,55 @@ def stats_portal():
     """Minimal preview for home page iframe"""
     return render_template("portals/stats_portal.html")
 
+
 def create_dataframe(stats_data):
-    df = pd.DataFrame(stats_data)
-    df['DateTime'] = pd.to_datetime(df['DateTime'], format='mixed', utc=True)
-    df.set_index('DateTime', inplace=True)
-    df.sort_index(inplace=True)
-    return df
+    data_frame = pd.DataFrame(stats_data)
+    data_frame["DateTime"] = pd.to_datetime(
+        data_frame["DateTime"], format="mixed", utc=True
+    )
+    data_frame.set_index("DateTime", inplace=True)
+    data_frame.sort_index(inplace=True)
+    return data_frame
 
-def plot_gdp_trend(df, country):
+
+def plot_gdp_trend(data_frame, country):
     plt.figure(figsize=(10, 6))
-    plt.plot(df.index, df['Value'], marker='o', linestyle='-', linewidth=2, markersize=4)
-    plt.title(f'{country.capitalize()} GDP Over Time', fontsize=16, fontweight='bold')
-    plt.xlabel('Date', fontsize=12)
-    plt.ylabel(f'{country.capitalize()} GDP Value', fontsize=12)
+    plt.plot(
+        data_frame.index,
+        data_frame["Value"],
+        marker="o",
+        linestyle="-",
+        linewidth=2,
+        markersize=4,
+    )
+    plt.title(f"{country.capitalize()} GDP Over Time", fontsize=16, fontweight="bold")
+    plt.xlabel("Date", fontsize=12)
+    plt.ylabel(f"{country.capitalize()} GDP Value", fontsize=12)
     plt.grid(True, alpha=0.3)
     plt.xticks(rotation=45)
     plt.tight_layout()
-    img_path = os.path.join('website', 'static', 'gdp_plot.png')
+    img_path = os.path.join("website", "static", "gdp_plot.png")
     plt.savefig(img_path)
     plt.close()
-    return 'gdp_plot.png'
+    return "gdp_plot.png"
 
-def plot_gdp_page(df_page, country):
+
+def plot_gdp_page(data_frame_page, country):
     plt.figure(figsize=(8, 4))
-    plt.plot(df_page.index, df_page['Value'], marker='o', linestyle='-', color='orange')
-    plt.title(f'{country.capitalize()} GDP (Selected Period)', fontsize=14)
-    plt.xlabel('Date', fontsize=10)
-    plt.ylabel(f'{country.capitalize()} GDP Value', fontsize=10)
+    plt.plot(
+        data_frame_page.index,
+        data_frame_page["Value"],
+        marker="o",
+        linestyle="-",
+        color="orange",
+    )
+    plt.title(f"{country.capitalize()} GDP (Selected Period)", fontsize=14)
+    plt.xlabel("Date", fontsize=10)
+    plt.ylabel(f"{country.capitalize()} GDP Value", fontsize=10)
     plt.grid(True, alpha=0.3)
     plt.xticks(rotation=45)
     plt.tight_layout()
-    img_path = os.path.join('website', 'static', 'gdp_plot_page.png')
+    img_path = os.path.join("website", "static", "gdp_plot_page.png")
     plt.savefig(img_path)
     plt.close()
-    return 'gdp_plot_page.png'
+    return "gdp_plot_page.png"

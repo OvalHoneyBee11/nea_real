@@ -5,46 +5,48 @@
 <h1>Welcome {{ user.username }} to EconSpark</h1>
 
 {% if user.is_teacher %}
-    <h2>Classes I Teach</h2>
+<h2>Classes I Teach</h2>
 {% else %}
-    <h2>My Classes</h2>
+<h2>My Classes</h2>
 {% endif %}
 
 {% if user_classes %}
-    <ul style="list-style: none; padding: 0;">
-    {% for class_ in user_classes %}
-        <li style="margin-bottom: 1rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px;">
-            <h3 style="margin: 0 0 0.5rem 0;">{{ class_.name }}</h3>
-            <p style="margin: 0 0 0.5rem 0; color: #666;">{{ class_.description }}</p>
-            <p style="margin: 0 0 0.5rem 0;"><strong>Teacher:</strong> {{ class_.teacher.username }}</p>
-            <a href="{{ url_for('classes.class_detail', class_id=class_.id) }}" class="btn btn-primary btn-sm">View Class →</a>
-        </li>
+<ul style="list-style: none; padding: 0;">
+    {% for user_class in user_classes %}
+    <li style="margin-bottom: 1rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px;">
+        <h3 style="margin: 0 0 0.5rem 0;">{{ user_class.name }}</h3>
+        <p style="margin: 0 0 0.5rem 0; color: #666;">{{ user_class.description }}</p>
+        <p style="margin: 0 0 0.5rem 0;"><strong>Teacher:</strong> {{ user_class.teacher.username }}</p>
+        <a href="{{ url_for('classes.class_detail', class_id=user_class.id) }}" class="btn btn-primary btn-sm">View
+            Class →</a>
+    </li>
     {% endfor %}
-    </ul>
+</ul>
 {% else %}
-    {% if user.is_teacher %}
-        <p>You haven't created any classes yet.</p>
-        <a href="{{ url_for('classes.create_class') }}" class="btn btn-success">Create a Class</a>
-    {% else %}
-        <p>You are not enrolled in any classes yet.</p>
-        <a href="{{ url_for('classes.join_class') }}" class="btn btn-success">Join a Class</a>
-    {% endif %}
+{% if user.is_teacher %}
+<p>You haven't created any classes yet.</p>
+<a href="{{ url_for('classes.create_class') }}" class="btn btn-success">Create a Class</a>
+{% else %}
+<p>You are not enrolled in any classes yet.</p>
+<a href="{{ url_for('classes.join_class') }}" class="btn btn-success">Join a Class</a>
+{% endif %}
 {% endif %}
 
 <h2>My Question Sets</h2>
 {% if user_question_sets %}
-    <ul style="list-style: none; padding: 0;">
-    {% for qset in user_question_sets %}
-        <li style="margin-bottom: 1rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px;">
-            <h3 style="margin: 0 0 0.5rem 0;">{{ qset.name }}</h3>
-            <p style="margin: 0 0 0.5rem 0; color: #666;">{{ qset.description }}</p>
-            <p style="margin: 0;"><strong>Questions:</strong> {{ qset.questions|length }}</p>
-            <a href="{{ url_for('tests.questions', set_id=qset.id) }}" class="btn btn-primary btn-sm">View Questions →</a>
-        </li>
+<ul style="list-style: none; padding: 0;">
+    {% for question_set in user_question_sets %}
+    <li style="margin-bottom: 1rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px;">
+        <h3 style="margin: 0 0 0.5rem 0;">{{ question_set.name }}</h3>
+        <p style="margin: 0 0 0.5rem 0; color: #666;">{{ question_set.description }}</p>
+        <p style="margin: 0;"><strong>Questions:</strong> {{ question_set.questions|length }}</p>
+        <a href="{{ url_for('tests.questions', set_id=question_set.id) }}" class="btn btn-primary btn-sm">View Questions
+            →</a>
+    </li>
     {% endfor %}
-    </ul>
+</ul>
 {% else %}
-    <p>You have not created any question sets yet.</p>
-    <a href="{{ url_for('tests.create_question_set') }}" class="btn btn-success">Create a Question Set</a>
+<p>You have not created any question sets yet.</p>
+<a href="{{ url_for('tests.create_question_set') }}" class="btn btn-success">Create a Question Set</a>
 {% endif %}
 {% endblock %}

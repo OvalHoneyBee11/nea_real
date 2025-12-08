@@ -14,17 +14,18 @@
 {% if taught_classes %}
 <h2>Classes I Teach</h2>
 <div class="row">
-    {% for class in taught_classes %}
+    {% for user_class in taught_classes %}
     <div class="col-md-6 mb-3">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">{{ class.name }}</h5>
-                <p class="card-text">{{ class.description or "No description" }}</p>
+                <h5 class="card-title">{{ user_class.name }}</h5>
+                <p class="card-text">{{ user_class.description or "No description" }}</p>
                 <p class="text-muted">
-                    <strong>Class Code:</strong> <span class="badge badge-info">{{ class.code }}</span>
+                    <strong>Class Code:</strong> <span class="badge badge-info">{{ user_class.code }}</span>
                 </p>
-                <p class="text-muted"><small>{{ class.memberships|length }} student(s) enrolled</small></p>
-                <a href="{{ url_for('classes.class_detail', class_id=class.id) }}" class="btn btn-primary btn-sm">View Class</a>
+                <p class="text-muted"><small>{{ user_class.memberships|length }} student(s) enrolled</small></p>
+                <a href="{{ url_for('classes.class_detail', class_id=user_class.id) }}"
+                    class="btn btn-primary btn-sm">View Class</a>
             </div>
         </div>
     </div>
@@ -35,14 +36,15 @@
 {% if enrolled_classes %}
 <h2>Classes I'm Taking</h2>
 <div class="row">
-    {% for class in enrolled_classes %}
+    {% for user_class in enrolled_classes %}
     <div class="col-md-6 mb-3">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">{{ class.name }}</h5>
-                <p class="card-text">{{ class.description or "No description" }}</p>
-                <p class="text-muted"><small>Teacher: {{ class.teacher.username }}</small></p>
-                <a href="{{ url_for('classes.class_detail', class_id=class.id) }}" class="btn btn-primary btn-sm">View Class</a>
+                <h5 class="card-title">{{ user_class.name }}</h5>
+                <p class="card-text">{{ user_class.description or "No description" }}</p>
+                <p class="text-muted"><small>Teacher: {{ user_class.teacher.username }}</small></p>
+                <a href="{{ url_for('classes.class_detail', class_id=user_class.id) }}"
+                    class="btn btn-primary btn-sm">View Class</a>
             </div>
         </div>
     </div>
