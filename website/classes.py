@@ -1,7 +1,7 @@
 import random
 import string
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import Class, ClassMembership, User, ChatMessage, Assignment
+from .models import Class, ClassMembership, User, ChatMessage, Assignment, QuestionSet
 from . import db
 from flask_login import login_required, current_user
 from datetime import datetime
@@ -159,13 +159,97 @@ def class_detail(class_id):
     )
 
     my_class = Class.query.get(class_id)
+    # If teacher or class member, load their question sets for sharing UI
+    user_question_sets = None
+    if is_teacher or (
+        ClassMembership.query.filter_by(
+            user_id=current_user.id, class_id=class_id
+        ).first()
+        is not None
+    ):
+        user_question_sets = QuestionSet.query.filter_by(user_id=current_user.id).all()
+
+    # Shared question sets for this class
+    shared_sets = my_class.question_sets.all()
+
     return render_template(
         "class_detail.html",
         user=current_user,
         class_=my_class,  # changed: pass class_ not 'class'
         is_teacher=is_teacher,
+        is_student=is_student,
         students=students,
+        user_question_sets=user_question_sets,
+        shared_sets=shared_sets,
     )
+
+
+@classes.route("/class/<int:class_id>/share_question_set", methods=["POST"])
+@login_required
+def share_question_set(class_id):
+    class_obj = Class.query.get_or_404(class_id)
+    # Allow sharing if the current user is the class teacher or a member of the class
+    if not (
+        class_obj.teacher_id == current_user.id
+        or ClassMembership.query.filter_by(
+            user_id=current_user.id, class_id=class_id
+        ).first()
+    ):
+        flash(
+            "Only the class teacher or a class member can share question sets.",
+            "danger",
+        )
+        return redirect(url_for("classes.class_detail", class_id=class_id))
+
+    set_id = request.form.get("set_id")
+    if not set_id:
+        flash("No question set selected.", "warning")
+        return redirect(url_for("classes.class_detail", class_id=class_id))
+
+    question_set = QuestionSet.query.filter_by(
+        id=int(set_id), user_id=current_user.id
+    ).first()
+    if not question_set:
+        flash("Question set not found or you do not own it.", "error")
+        return redirect(url_for("classes.class_detail", class_id=class_id))
+
+    # Add association if not already present
+    if question_set in class_obj.question_sets:
+        flash("Question set already shared with this class.", "warning")
+        return redirect(url_for("classes.class_detail", class_id=class_id))
+
+    class_obj.question_sets.append(question_set)
+    db.session.commit()
+    flash("Question set shared with class.", "success")
+    return redirect(url_for("classes.class_detail", class_id=class_id))
+
+
+@classes.route(
+    "/class/<int:class_id>/unshare_question_set/<int:set_id>", methods=["POST"]
+)
+@login_required
+def unshare_question_set(class_id, set_id):
+    class_obj = Class.query.get_or_404(class_id)
+    # Allow unsharing if the current user is the class teacher or the owner of the question set
+    if not (
+        class_obj.teacher_id == current_user.id
+        or question_set.user_id == current_user.id
+    ):
+        flash(
+            "Only the class teacher or the question set owner can remove a shared question set.",
+            "danger",
+        )
+        return redirect(url_for("classes.class_detail", class_id=class_id))
+
+    question_set = QuestionSet.query.get_or_404(set_id)
+    if question_set not in class_obj.question_sets:
+        flash("Question set is not shared with this class.", "warning")
+        return redirect(url_for("classes.class_detail", class_id=class_id))
+
+    class_obj.question_sets.remove(question_set)
+    db.session.commit()
+    flash("Question set removed from class.", "success")
+    return redirect(url_for("classes.class_detail", class_id=class_id))
 
 
 @classes.route("/class/<int:class_id>/chat", methods=["GET", "POST"])

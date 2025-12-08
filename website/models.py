@@ -3,6 +3,13 @@ from flask_login import UserMixin
 import string
 import random
 
+# Association table for sharing question sets with classes
+class_question_sets = db.Table(
+    "class_question_sets",
+    db.Column("class_id", db.Integer, db.ForeignKey("class.id")),
+    db.Column("question_set_id", db.Integer, db.ForeignKey("question_set.id")),
+)
+
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -32,6 +39,13 @@ class Class(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), default=db.func.now())
     memberships = db.relationship(
         "ClassMembership", backref="class_obj", lazy=True, cascade="all, delete-orphan"
+    )
+    # Question sets shared with this class
+    question_sets = db.relationship(
+        "QuestionSet",
+        secondary=class_question_sets,
+        backref=db.backref("classes", lazy="dynamic"),
+        lazy="dynamic",
     )
 
     @staticmethod

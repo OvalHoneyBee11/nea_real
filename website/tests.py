@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import Question, QuestionSet
+from .models import Question, QuestionSet, ClassMembership
 from . import db
 from flask_login import login_required, current_user
 
@@ -120,13 +120,35 @@ def delete_question(question_id):
 @tests.route("/flashcards/<int:set_id>", methods=["GET"])
 @login_required
 def flashcards(set_id):
-    # Get the question set
-    question_set = QuestionSet.query.filter_by(
-        id=set_id, user_id=current_user.id
-    ).first()
+    # Get the question set (allow access if owner or shared with a class the user belongs to)
+    question_set = QuestionSet.query.get(set_id)
 
     if not question_set:
         flash("Question set not found.", category="error")
+        return redirect(url_for("tests.question_sets"))
+
+    # Access control: owner OR shared with a class where the user is a member or the teacher
+    allowed = False
+    if question_set.user_id == current_user.id:
+        allowed = True
+    else:
+        for cls in question_set.classes:
+            # teacher of the class
+            if cls.teacher_id == current_user.id:
+                allowed = True
+                break
+            # student member
+            if (
+                ClassMembership.query.filter_by(
+                    user_id=current_user.id, class_id=cls.id
+                ).first()
+                is not None
+            ):
+                allowed = True
+                break
+
+    if not allowed:
+        flash("You don't have access to this question set.", category="error")
         return redirect(url_for("tests.question_sets"))
 
     if not question_set.questions:

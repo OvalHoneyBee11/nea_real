@@ -2,7 +2,7 @@
 {% block title %}Class Details{% endblock %}
 
 {% block content %}
-<h1>{{ class_.name }}</h1>          
+<h1>{{ class_.name }}</h1>
 <p>{{ class_.description }}</p>
 <p>Teacher: {{ class_.teacher.username }}</p>
 
@@ -10,24 +10,64 @@
     <a href="{{ url_for('classes.class_chat', class_id=class_.id) }}" class="btn btn-success">Class Chat</a>
     <a href="{{ url_for('classes.view_assignments', class_id=class_.id) }}" class="btn btn-info">Assignments</a>
     {% if is_teacher %}
-        <a href="{{ url_for('classes.create_assignment', class_id=class_.id) }}" class="btn btn-primary">Create Assignment</a>
+    <a href="{{ url_for('classes.create_assignment', class_id=class_.id) }}" class="btn btn-primary">Create
+        Assignment</a>
     {% endif %}
 </div>
 
 <h2>Students Enrolled</h2>
 <ul>
     {% for student in students %}
-        <li>{{ student.username }}</li>
+    <li>{{ student.username }}</li>
     {% else %}
-        <li>No students enrolled yet.</li>
+    <li>No students enrolled yet.</li>
     {% endfor %}
 </ul>
 
-{% if is_teacher %}
-    <div style="margin-top: 2rem;">
-        <form method="POST" action="{{ url_for('classes.delete_class', class_id=class_.id) }}" onsubmit="return confirm('Are you sure you want to delete this class? This cannot be undone.');">
-            <button type="submit" class="btn btn-danger">Delete Class</button>
+<h2>Shared Question Sets</h2>
+{% if shared_sets %}
+<ul>
+    {% for s in shared_sets %}
+    <li>
+        <strong>{{ s.name }}</strong>
+        <a href="{{ url_for('tests.flashcards', set_id=s.id) }}" class="btn btn-sm btn-primary">Run Flashcards</a>
+        {% if is_teacher or s.user_id == user.id %}
+        <form method="POST" action="{{ url_for('classes.unshare_question_set', class_id=class_.id, set_id=s.id) }}"
+            style="display:inline;">
+            <button type="submit" class="btn btn-sm btn-danger"
+                onclick="return confirm('Remove this question set from the class?');">Remove</button>
         </form>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No question sets shared with this class.</p>
+{% endif %}
+{% if (is_teacher or is_student) and user_question_sets %}
+<h3>Share a Question Set</h3>
+<form method="POST" action="{{ url_for('classes.share_question_set', class_id=class_.id) }}">
+    <div class="form-group">
+        <label for="set_id">Select one of your question sets to share:</label>
+        <select name="set_id" id="set_id" class="form-control">
+            {% for qs in user_question_sets %}
+            {% if qs not in shared_sets %}
+            <option value="{{ qs.id }}">{{ qs.name }}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
     </div>
+    <br />
+    <button type="submit" class="btn btn-success">Share Question Set</button>
+</form>
+{% endif %}
+
+{% if is_teacher %}
+<div style="margin-top: 2rem;">
+    <form method="POST" action="{{ url_for('classes.delete_class', class_id=class_.id) }}"
+        onsubmit="return confirm('Are you sure you want to delete this class? This cannot be undone.');">
+        <button type="submit" class="btn btn-danger">Delete Class</button>
+    </form>
+</div>
 {% endif %}
 {% endblock %}
