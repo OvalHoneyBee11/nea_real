@@ -90,15 +90,7 @@ def get_stats():
         total=total,
         country=country.capitalize(),
     )
-
-
-@sn.route("/portal/stats")
-@login_required
-def stats_portal():
-    """Minimal preview for home page iframe"""
-    return render_template("portals/stats_portal.html")
-
-
+# Data processing function
 def create_dataframe(stats_data):
     data_frame = pd.DataFrame(stats_data)
     data_frame["DateTime"] = pd.to_datetime(
@@ -108,7 +100,7 @@ def create_dataframe(stats_data):
     data_frame.sort_index(inplace=True)
     return data_frame
 
-
+# Plotting functions
 def plot_gdp_trend(data_frame, country):
     plt.figure(figsize=(10, 6))
     plt.plot(
@@ -130,7 +122,7 @@ def plot_gdp_trend(data_frame, country):
     plt.close()
     return "gdp_plot.png"
 
-
+# Plot for paginated data
 def plot_gdp_page(data_frame_page, country):
     plt.figure(figsize=(8, 4))
     plt.plot(

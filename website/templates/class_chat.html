@@ -8,7 +8,7 @@
 <a href="{{ url_for('classes.class_detail', class_id=class_.id) }}" class="btn btn-secondary btn-sm mb-3">
     ← Back to Class
 </a>
-
+<!-- Creating a style for the chat container, messages etc-->
 <style>
     .chat-container {
         border: 1px solid #ddd;
@@ -73,7 +73,7 @@
         min-height: 60px;
     }
 </style>
-
+<!-- Displaying chat container and messages -->
 <div class="chat-container">
     <div class="messages-area" id="messagesArea">
         {% if messages %}
@@ -95,6 +95,7 @@
             <p class="text-muted text-center">No messages yet. Be the first to say something!</p>
         {% endif %}
     </div>
+    <!-- Chat input form -->
     
     <form method="POST" class="chat-form">
         <textarea 

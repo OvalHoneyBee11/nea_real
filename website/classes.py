@@ -175,7 +175,7 @@ def class_detail(class_id):
     return render_template(
         "class_detail.html",
         user=current_user,
-        class_=my_class,  # changed: pass class_ not 'class'
+        class_=my_class, 
         is_teacher=is_teacher,
         is_student=is_student,
         students=students,
@@ -411,7 +411,7 @@ def create_assignment(class_id):
         "create_assignment.html", user=current_user, class_=class_obj
     )
 
-
+# Delete assignment route
 @classes.route(
     "/class/<int:class_id>/assignments/<int:assignment_id>/delete", methods=["POST"]
 )

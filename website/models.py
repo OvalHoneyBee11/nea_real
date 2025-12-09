@@ -100,7 +100,5 @@ class Assignment(db.Model):
     class_id = db.Column(db.Integer, db.ForeignKey("class.id"), nullable=False)
     creator_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     attachment_url = db.Column(db.String(500))
-
-    # Relationships
     creator = db.relationship("User", backref="created_assignments")
     class_obj = db.relationship("Class", backref="assignments")

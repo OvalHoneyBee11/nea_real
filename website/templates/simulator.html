@@ -2,7 +2,7 @@
 {% block title %}Economic Simulator{% endblock %}
 
 {% block content %}
-<!DOCTYPE html>
+<!-- Sorts out accessing KGJS-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -23,7 +23,7 @@
             console.error('kg init error:', err);
         }
     }
-
+//Function to show different graphs based on button clicked
     function showGraph(graphId, btn){
         document.querySelectorAll('.graph-container').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
@@ -46,7 +46,7 @@
         }, 200);
     });
     </script>
-
+<!-- Style of buttons to switch between graphs-->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -94,6 +94,7 @@
     </style>
 </head>
 <body>
+  <!-- the different Graphs can add more-->
     <h1>Economic Simulator</h1>
     <div class="tab-buttons">
         <button class="tab-button active" onclick="showGraph('equilibrium', this)">Equilibrium Graph</button>
@@ -101,7 +102,7 @@
         <button class="tab-button" onclick="showGraph('monopoly', this)">Monopoly Graph</button>
         <button class="tab-button" onclick="showGraph('s+d', this)">Supply & Demand Graph</button>
     </div>
-    
+  <!-- Equilibrium Graph-->
     <div id="equilibrium" class="graph-container active">
         <div class="kg-container">
 schema: EconSchema
@@ -154,6 +155,7 @@ layout:
     
     <div id="ppf" class="graph-container">
         <div class="kg-container">
+<!-- Production Possibility Frontier Graph -->
 schema: EconSchema
 params: 
   - {name: maxGuns, value: 100, min: 50, max: 150, round: 10}
@@ -225,6 +227,7 @@ layout:
     
     <div id="monopoly" class="graph-container">
         <div class="kg-container">
+<!-- Monopoly vs Perfect Competition Graph -->
 schema: EconSchema
 params: 
   - {name: demandIntercept, value: 10, min: 8, max: 12, round: 0.5}
@@ -297,6 +300,7 @@ layout:
     
     <div id="s+d" class="graph-container">
         <div class="kg-container">
+<!-- Supply and Demand Shifts Graph -->
 schema: EconSchema
 params:
   - {name: demandShift, value: 0, min: -5, max: 5, round: 0.1}

@@ -3,7 +3,7 @@
 
 {% block content %}
 <h1>Economic Statistics</h1>
-
+<!-- select which countries stats to show-->
 <form method="post" style="margin-bottom: 1em;">
     <label for="country">Select Country:</label>
     <select name="country" id="country">
@@ -21,11 +21,13 @@
         {% endif %}
         {% if gdp_plot_page_filename %}
             <h2>GDP for Selected Period</h2>
+            <!-- Display GDP chart for the selected page -->
             <img src="{{ url_for('static', filename=gdp_plot_page_filename) }}" alt="GDP Page Chart" style="max-width:400px; margin-bottom: 2em;">
         {% endif %}
     </div>
     <div>
         {% if stats_data %}
+        <!-- Table of Data-->
             <h3>Raw GDP Data</h3>
             <table border="1" cellpadding="5" cellspacing="0">
                 <tr>

@@ -6,7 +6,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 
 auth = Blueprint("auth", __name__)
 
-
+# Login route
 @auth.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -28,7 +28,7 @@ def logout():
     logout_user()
     return redirect(url_for("auth.login"))
 
-
+# Sign-up route
 @auth.route("/sign-up", methods=["GET", "POST"])
 def sign_up():
     if request.method == "POST":
@@ -41,7 +41,7 @@ def sign_up():
         if user:
             flash("Username already exists!", category="error")
             return render_template("sign_up.html")
-
+        # Validation checks
         if password1 != password2:
             flash("Passwords do not match!", category="error")
         if len(username) < 3:

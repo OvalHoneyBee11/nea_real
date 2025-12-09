@@ -3,11 +3,11 @@
 
 {% block content %}
 <h1>Assignments for {{ class_.name }}</h1>
-
+<!-- Assignment only if teacher -->
 {% if is_teacher %}
     <a href="{{ url_for('classes.create_assignment', class_id=class_.id) }}" class="btn btn-primary" style="margin-bottom:1rem;">Create New Assignment</a>
 {% endif %}
-
+<!-- List of assignments -->
 {% if assignments %}
     <div style="margin-top:1rem;">
     {% for assignment in assignments %}

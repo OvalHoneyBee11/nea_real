@@ -3,14 +3,14 @@
 
 {% block content %}
 <h1>My Classes</h1>
-
+<!-- Join/Create new classes-->
 <div style="margin-bottom: 2em;">
     {% if user.is_teacher %}
     <a href="{{ url_for('classes.create_class') }}" class="btn btn-success">Create New Class</a>
     {% endif %}
     <a href="{{ url_for('classes.join_class') }}" class="btn btn-success">Join Class with Code</a>
 </div>
-
+<!-- Taught Classes -->
 {% if taught_classes %}
 <h2>Classes I Teach</h2>
 <div class="row">
@@ -32,7 +32,7 @@
     {% endfor %}
 </div>
 {% endif %}
-
+<!-- Enrolled Classes -->
 {% if enrolled_classes %}
 <h2>Classes I'm Taking</h2>
 <div class="row">
@@ -51,7 +51,7 @@
     {% endfor %}
 </div>
 {% endif %}
-
+<!-- No classes message -->
 {% if not taught_classes and not enrolled_classes %}
 <div class="alert alert-info">
     <h4>Welcome to Classes!</h4>

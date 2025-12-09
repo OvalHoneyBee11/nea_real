@@ -9,7 +9,7 @@
     <button type="button" class="btn btn-primary" style="margin-bottom: 1em;">Create New Question Set</button>
 </a>
 
-<!-- Display selected question set or all sets -->
+<!-- Display question sets-->
 {% if selected_set %}
 <h2>{{ selected_set.name }}</h2>
 <a href="{{ url_for('tests.questions', set_id=selected_set.id) }}">
@@ -22,6 +22,7 @@
 {% endif %}
 {% if selected_set.questions %}
 <ul>
+<!-- Displays Q and A's-->
     {% for q in selected_set.questions %}
     <li>
         <strong>Q:</strong> {{ q.question }} —
@@ -30,6 +31,7 @@
     {% endfor %}
 </ul>
 {% else %}
+<!-- If no questions-->
 <p>No questions in this set yet.</p>
 {% endif %}
 {% elif question_sets %}

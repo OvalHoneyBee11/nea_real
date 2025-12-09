@@ -5,7 +5,7 @@
 <h1>{{ class_.name }}</h1>
 <p>{{ class_.description }}</p>
 <p>Teacher: {{ class_.teacher.username }}</p>
-
+<!-- Buttons for chat, assignments, create assignment if teacher -->
 <div class="mb-3">
     <a href="{{ url_for('classes.class_chat', class_id=class_.id) }}" class="btn btn-success">Class Chat</a>
     <a href="{{ url_for('classes.view_assignments', class_id=class_.id) }}" class="btn btn-info">Assignments</a>
@@ -14,7 +14,7 @@
         Assignment</a>
     {% endif %}
 </div>
-
+<!--Shows enrolled students-->
 <h2>Students Enrolled</h2>
 <ul>
     {% for student in students %}
@@ -23,7 +23,7 @@
     <li>No students enrolled yet.</li>
     {% endfor %}
 </ul>
-
+<!-- Shared Question Sets -->
 <h2>Shared Question Sets</h2>
 {% if shared_sets %}
 <ul>
@@ -61,7 +61,7 @@
     <button type="submit" class="btn btn-success">Share Question Set</button>
 </form>
 {% endif %}
-
+<!-- deleting class-->
 {% if is_teacher %}
 <div style="margin-top: 2rem;">
     <form method="POST" action="{{ url_for('classes.delete_class', class_id=class_.id) }}"

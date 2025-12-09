@@ -6,8 +6,7 @@ import os
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
-
-
+# Initialize the Flask application
 def create_app():
     app_root = "."
     app = Flask(__name__)
@@ -22,7 +21,7 @@ def create_app():
     from .simulator import sim
     from .class_info import cls
     from .classes import classes
-
+# Register blueprints
     app.register_blueprint(sim, url_prefix="/sim")
     app.register_blueprint(cls, url_prefix="/cls")
     app.register_blueprint(views, url_prefix="/")
@@ -34,7 +33,7 @@ def create_app():
     from .models import User
 
     create_database(app)
-
+# Setup login manager
     login_manager = LoginManager()
     login_manager.login_view = "auth.login"
     login_manager.init_app(app)
@@ -45,7 +44,7 @@ def create_app():
 
     return app
 
-
+# Create the database if it doesn't exist
 def create_database(app):
     if not path.exists("website/" + DB_NAME):
         with app.app_context():

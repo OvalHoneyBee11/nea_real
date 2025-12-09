@@ -2,6 +2,7 @@
 {% block title %}Flashcards - {{ question_set.name }}{% endblock %}
 
 {% block content %}
+<!-- Flashcards Template -->
 <style>
     .flashcard {
         border: 2px solid #007bff;
@@ -88,7 +89,7 @@
         color: #333;
     }
 </style>
-
+<!--Making the Progress Bar-->
 <h1>{{ question_set.name }}</h1>
 <div class="progress-container">
     <div class="progress-text">
@@ -101,12 +102,12 @@
         </div>
     </div>
 </div>
-
+<!--Displaying the Score-->
 <div class="score-display">
     <strong>Score:</strong> <span id="correct_count">0</span> correct / <span id="total_count">{{ questions_data|length
         }}</span>
 </div>
-
+<!--Flashcard Display-->
 <div class="flashcard">
     <div class="question" id="question"></div>
     <div class="answer hidden" id="answer"></div>
@@ -120,12 +121,12 @@
     <button class="btn btn-secondary" onclick="prevCard()" id="prev">← Previous</button>
     <button class="btn btn-primary" onclick="nextCard()" id="next">Next →</button>
 </div>
-
+<!--JavaScript for Flashcard Functionality-->
 <script>
     const questions = {{ questions_data | tojson }};
     let i = 0;
     let correct_answers = {};
-
+// Updates the progress bar and percentage
     function updateProgress() {
         const percentage = Math.round(((i + 1) / questions.length) * 100);
         document.getElementById('percentage').textContent = percentage;
@@ -137,7 +138,7 @@
         const correct_count = Object.values(correct_answers).filter(val => val === true).length;
         document.getElementById('correct_count').textContent = correct_count;
     }
-
+// Displays the current flashcard
     function show() {
         document.getElementById('question').textContent = questions[i].question;
         document.getElementById('answer').textContent = questions[i].answer;
@@ -153,7 +154,7 @@
         updateProgress();
         displayCardStatus();
     }
-
+//
     function displayCardStatus() {
         const status = correct_answers[i];
         const status_element = document.getElementById('answer_status');
