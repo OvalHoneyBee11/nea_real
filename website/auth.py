@@ -6,6 +6,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 
 auth = Blueprint("auth", __name__)
 
+
 # Login route
 @auth.route("/login", methods=["GET", "POST"])
 def login():
@@ -28,6 +29,7 @@ def logout():
     logout_user()
     return redirect(url_for("auth.login"))
 
+
 # Sign-up route
 @auth.route("/sign-up", methods=["GET", "POST"])
 def sign_up():
@@ -45,10 +47,10 @@ def sign_up():
         if password1 != password2:
             flash("Passwords do not match!", category="error")
         if len(username) < 3:
-            flash("Username must be at least 3 characters long!", category="error")
-        if len(password1) < 6:
-            flash("Password must be at least 6 characters long!", category="error")
-        if len(username) >= 4 and len(password1) >= 6 and password1 == password2:
+            flash("Username must be at least 4 characters long!", category="error")
+        if len(password1) < 7:
+            flash("Password must be at least 8 characters long!", category="error")
+        if len(username) >= 4 and len(password1) >= 8 and password1 == password2:
             new_user = User(
                 username=username,
                 password=generate_password_hash(password1, method="pbkdf2:sha256"),
