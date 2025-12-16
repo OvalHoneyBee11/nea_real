@@ -88,6 +88,30 @@
         font-size: 1.1em;
         color: #333;
     }
+
+    .answered-indicator {
+        text-align: center;
+        padding: 0.75em;
+        margin-bottom: 1em;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 1em;
+        display: none;
+    }
+
+    .answered-indicator.unanswered {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 2px solid #ffc107;
+        display: block;
+    }
+
+    .answered-indicator.answered {
+        background-color: #cfe2ff;
+        color: #084298;
+        border: 2px solid #0d6efd;
+        display: block;
+    }
 </style>
 <!--Making the Progress Bar-->
 <h1>{{ question_set.name }}</h1>
@@ -109,6 +133,7 @@
 </div>
 <!--Flashcard Display-->
 <div class="flashcard">
+    <div class="answered-indicator" id="answered_indicator"></div>
     <div class="question" id="question"></div>
     <div class="answer hidden" id="answer"></div>
     <div class="answer-status" id="answer_status"></div>
@@ -158,14 +183,27 @@
     function displayCardStatus() {
         const status = correct_answers[i];
         const status_element = document.getElementById('answer_status');
+        const indicator = document.getElementById('answered_indicator');
+        
         if (status === true) {
             status_element.innerHTML = 'You got this one correct!';
             status_element.classList.add('correct');
             status_element.classList.remove('incorrect');
+            indicator.innerHTML = 'Already answered - Marked as Correct';
+            indicator.classList.add('answered');
+            indicator.classList.remove('unanswered');
         } else if (status === false) {
             status_element.innerHTML = 'You got this one incorrect';
             status_element.classList.add('incorrect');
             status_element.classList.remove('correct');
+            indicator.innerHTML = 'Already answered - Marked as Incorrect';
+            indicator.classList.add('answered');
+            indicator.classList.remove('unanswered');
+        } else {
+            // Question hasn't been answered yet
+            indicator.innerHTML = 'Not yet answered in this session';
+            indicator.classList.add('unanswered');
+            indicator.classList.remove('answered');
         }
     }
 
