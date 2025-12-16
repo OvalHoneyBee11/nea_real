@@ -140,30 +140,33 @@
 </div>
 
 <div style="text-align: center; margin-top: 1em;">
-    <button class="btn btn-info" onclick="toggleAnswer()">Show Answer</button>
-    <button class="btn btn-success" onclick="markCorrect()" id="correct_btn" style="display:none;">Correct</button>
-    <button class="btn btn-danger" onclick="markIncorrect()" id="incorrect_btn" style="display:none;">Incorrect</button>
-    <button class="btn btn-secondary" onclick="prevCard()" id="prev">← Previous</button>
-    <button class="btn btn-primary" onclick="nextCard()" id="next">Next →</button>
+    <button class="btn btn-info" onclick="toggle_answer()">Show Answer</button>
+    <button class="btn btn-success" onclick="mark_correct()" id="correct_btn" style="display:none;">Correct</button>
+    <button class="btn btn-danger" onclick="mark_incorrect()" id="incorrect_btn"
+        style="display:none;">Incorrect</button>
+    <button class="btn btn-secondary" onclick="prev_card()" id="prev">← Previous</button>
+    <button class="btn btn-primary" onclick="next_card()" id="next">Next →</button>
+    <button class="btn btn-warning" onclick="return_to_question_sets()" id="return_btn" style="display:none;">Return to Question Sets</button>
 </div>
 <!--JavaScript for Flashcard Functionality-->
 <script>
     const questions = {{ questions_data | tojson }};
+    const returnUrl = "{{ url_for('tests.question_sets') }}";
     let i = 0;
     let correct_answers = {};
-// Updates the progress bar and percentage
-    function updateProgress() {
+    // Updates the progress bar and percentage
+    function update_progress() {
         const percentage = Math.round(((i + 1) / questions.length) * 100);
         document.getElementById('percentage').textContent = percentage;
         document.getElementById('progressBar').style.width = percentage + '%';
         document.getElementById('progressBarText').textContent = percentage + '%';
     }
 
-    function updateScore() {
+    function update_score() {
         const correct_count = Object.values(correct_answers).filter(val => val === true).length;
         document.getElementById('correct_count').textContent = correct_count;
     }
-// Displays the current flashcard
+    // Displays the current flashcard
     function show() {
         document.getElementById('question').textContent = questions[i].question;
         document.getElementById('answer').textContent = questions[i].answer;
@@ -176,11 +179,11 @@
         document.getElementById('current').textContent = i + 1;
         document.getElementById('prev').disabled = i === 0;
         document.getElementById('next').disabled = i === questions.length - 1;
-        updateProgress();
-        displayCardStatus();
+        document.getElementById('return_btn').style.display = i === questions.length - 1 ? 'inline-block' : 'none';
+        update_progress();
     }
-
-    function displayCardStatus() {
+    //
+    function display_card_status() {
         const status = correct_answers[i];
         const status_element = document.getElementById('answer_status');
         const indicator = document.getElementById('answered_indicator');
@@ -207,7 +210,7 @@
         }
     }
 
-    function toggleAnswer() {
+    function toggle_answer() {
         const ans = document.getElementById('answer');
         ans.classList.toggle('hidden');
         const isHidden = ans.classList.contains('hidden');
@@ -223,28 +226,32 @@
         }
     }
 
-    function markCorrect() {
+    function mark_correct() {
         correct_answers[i] = true;
-        updateScore();
+        update_score();
         document.getElementById('answer_status').innerHTML = 'You got this one correct!';
         document.getElementById('answer_status').classList.add('correct');
         document.getElementById('answer_status').classList.remove('incorrect');
     }
 
-    function markIncorrect() {
+    function mark_incorrect() {
         correct_answers[i] = false;
-        updateScore();
+        update_score();
         document.getElementById('answer_status').innerHTML = 'You got this one incorrect';
         document.getElementById('answer_status').classList.add('incorrect');
         document.getElementById('answer_status').classList.remove('correct');
     }
 
-    function nextCard() {
+    function next_card() {
         if (i < questions.length - 1) { i++; show(); }
     }
 
-    function prevCard() {
+    function prev_card() {
         if (i > 0) { i--; show(); }
+    }
+
+    function return_to_question_sets() {
+        window.location.href = returnUrl;
     }
 
     show();
