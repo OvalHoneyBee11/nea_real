@@ -7,8 +7,8 @@
 <form method="post" style="margin-bottom: 1em;">
     <label for="country">Select Country:</label>
     <select name="country" id="country">
-        <option value="sweden" {% if country == "Sweden" %}selected{% endif %}>Sweden</option>
-        <option value="thailand" {% if country == "Thailand" %}selected{% endif %}>Thailand</option>
+        <option value="sweden" {% if country=="Sweden" %}selected{% endif %}>Sweden</option>
+        <option value="thailand" {% if country=="Thailand" %}selected{% endif %}>Thailand</option>
     </select>
     <button type="submit">Show Data</button>
 </form>
@@ -16,45 +16,47 @@
 <div style="display: flex; gap: 2em; align-items: flex-start;">
     <div>
         {% if gdp_plot_filename %}
-            <h2>{{ country }} GDP Over Time</h2>
-            <img src="{{ url_for('static', filename=gdp_plot_filename) }}" alt="GDP Trend Chart" style="max-width:400px; margin-bottom: 2em;">
+        <h2>{{ country }} GDP Over Time</h2>
+        <img src="{{ url_for('static', filename=gdp_plot_filename) }}" alt="GDP Trend Chart"
+            style="max-width:400px; margin-bottom: 2em;">
         {% endif %}
         {% if gdp_plot_page_filename %}
-            <h2>GDP for Selected Period</h2>
-            <!-- Display GDP chart for the selected page -->
-            <img src="{{ url_for('static', filename=gdp_plot_page_filename) }}" alt="GDP Page Chart" style="max-width:400px; margin-bottom: 2em;">
+        <h2>GDP for Selected Period</h2>
+        <!-- Display GDP chart for the selected page -->
+        <img src="{{ url_for('static', filename=gdp_plot_page_filename) }}" alt="GDP Page Chart"
+            style="max-width:400px; margin-bottom: 2em;">
         {% endif %}
     </div>
     <div>
         {% if stats_data %}
         <!-- Table of Data-->
-            <h3>Raw GDP Data</h3>
-            <table border="1" cellpadding="5" cellspacing="0">
-                <tr>
-                    <th>Date</th>
-                    <th>GDP Value</th>
-                    <th>Country</th>
-                </tr>
-                {% for item in stats_data %}
-                <tr>
-                    <td>{{ item.DateTime[:4] }}</td>
-                    <td>{{ item.Value }}</td>
-                    <td>{{ item.Country }}</td>
-                </tr>
+        <h3>GDP Data for Selected Period</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+            <tr>
+                <th>Date</th>
+                <th>GDP Value</th>
+                <th>Country</th>
+            </tr>
+            {% for item in stats_data %}
+            <tr>
+                <td>{{ item.DateTime[:4] }}</td>
+                <td>{{ item.Value }}</td>
+                <td>{{ item.Country }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <form method="get" style="margin-top:1em;">
+            <input type="hidden" name="country" value="{{ country.lower() }}">
+            <label for="page">Period:</label>
+            <select name="page" id="page" onchange="this.form.submit()">
+                {% for p in range(1, (total // per_page) + (1 if total % per_page else 0) + 1) %}
+                <option value="{{ p }}" {% if p==page %}selected{% endif %}>{{ p }}</option>
                 {% endfor %}
-            </table>
-            <form method="get" style="margin-top:1em;">
-                <input type="hidden" name="country" value="{{ country.lower() }}">
-                <label for="page">Page:</label>
-                <select name="page" id="page" onchange="this.form.submit()">
-                    {% for p in range(1, (total // per_page) + (1 if total % per_page else 0) + 1) %}
-                        <option value="{{ p }}" {% if p == page %}selected{% endif %}>{{ p }}</option>
-                    {% endfor %}
-                </select>
-            </form>
-            <span> Page {{ page }} of {{ (total // per_page) + (1 if total % per_page else 0) }} </span>
+            </select>
+        </form>
+        <span> Period {{ page }} of {{ (total // per_page) + (1 if total % per_page else 0) }} </span>
         {% else %}
-            <p>No Data Available</p>
+        <p>No Data Available</p>
         {% endif %}
     </div>
 </div>

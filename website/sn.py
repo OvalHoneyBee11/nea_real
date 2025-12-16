@@ -90,6 +90,8 @@ def get_stats():
         total=total,
         country=country.capitalize(),
     )
+
+
 # Data processing function
 def create_dataframe(stats_data):
     data_frame = pd.DataFrame(stats_data)
@@ -99,6 +101,7 @@ def create_dataframe(stats_data):
     data_frame.set_index("DateTime", inplace=True)
     data_frame.sort_index(inplace=True)
     return data_frame
+
 
 # Plotting functions
 def plot_gdp_trend(data_frame, country):
@@ -121,6 +124,7 @@ def plot_gdp_trend(data_frame, country):
     plt.savefig(img_path)
     plt.close()
     return "gdp_plot.png"
+
 
 # Plot for paginated data
 def plot_gdp_page(data_frame_page, country):
