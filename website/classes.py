@@ -175,7 +175,7 @@ def class_detail(class_id):
     return render_template(
         "class_detail.html",
         user=current_user,
-        class_=my_class, 
+        class_=my_class,
         is_teacher=is_teacher,
         is_student=is_student,
         students=students,
@@ -313,16 +313,7 @@ def delete_class(class_id):
         flash("Only the class teacher can delete this class.", "danger")
         return redirect(url_for("classes.class_detail", class_id=class_id))
 
-    # Delete all memberships first
-    ClassMembership.query.filter_by(class_id=class_id).delete()
-
-    # Delete all chat messages
-    ChatMessage.query.filter_by(class_id=class_id).delete()
-
-    # Delete all assignments
-    Assignment.query.filter_by(class_id=class_id).delete()
-
-    # Delete the class
+    # Delete the class (cascade will handle deleting memberships, chat messages, and assignments)
     db.session.delete(class_obj)
     db.session.commit()
 
@@ -410,6 +401,7 @@ def create_assignment(class_id):
     return render_template(
         "create_assignment.html", user=current_user, class_=class_obj
     )
+
 
 # Delete assignment route
 @classes.route(

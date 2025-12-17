@@ -2,113 +2,125 @@
 {% block title %}Economic Simulator{% endblock %}
 
 {% block content %}
-<!-- Sorts out accessing KGJS-->
 <html lang="en">
-<head>
+  <head >
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KineticGraphs Economic Simulator</title>
 
     <link rel="stylesheet" href="http://kineticgraphs.org/css/kg.0.2.6.css">
     <script src="https://kineticgraphs.org/js/kg.0.2.6.js"></script>
+    
     <script>
-    function initKgContainer(container){
-        if(!container) return;
+      function initKgContainer(container) {
+        if (!container) return;
         try {
-            if(typeof kg !== 'undefined'){
-                if(typeof kg.init === 'function') kg.init(container);
-                else if(typeof kg.render === 'function') kg.render(container);
-            }
-        } catch(err){
-            console.error('kg init error:', err);
+          if (typeof kg !== 'undefined') {
+            if (typeof kg.init === 'function') kg.init(container);
+            else if (typeof kg.render === 'function') kg.render(container);
+          }
+        } catch (err) {
+          console.error('kg init error:', err);
         }
-    }
-//Function to show different graphs based on button clicked
-    function showGraph(graphId, btn){
+      }
+
+      // Function to show different graphs based on button clicked
+      function showGraph(graphId, btn) {
         document.querySelectorAll('.graph-container').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
         const container = document.getElementById(graphId);
-        if(container) container.classList.add('active');
-        if(btn) btn.classList.add('active');
+        if (container) container.classList.add('active');
+        if (btn) btn.classList.add('active');
         const kgContainer = container ? container.querySelector('.kg-container') : null;
-        if(kgContainer) {
-            setTimeout(() => {
-                initKgContainer(kgContainer);
-                window.dispatchEvent(new Event('resize'));
-            }, 150);
+        if (kgContainer) {
+          setTimeout(() => {
+            initKgContainer(kgContainer);
+            window.dispatchEvent(new Event('resize'));
+          }, 150);
         }
-    }
+      }
 
-    document.addEventListener('DOMContentLoaded', function(){
+      document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.kg-container').forEach(initKgContainer);
         setTimeout(() => {
-            window.dispatchEvent(new Event('resize'));
+          window.dispatchEvent(new Event('resize'));
         }, 200);
-    });
+      });
     </script>
-<!-- Style of buttons to switch between graphs-->
+
+    <!-- Style of buttons to switch between graphs -->
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .tab-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .tab-button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: #6c757d;
-            color: white;
-            transition: background-color 0.3s;
-        }
-        .tab-button:hover {
-            background-color: #5a6268;
-        }
-        .tab-button.active {
-            background-color: #007bff;
-        }
-        .graph-container {
-            visibility: hidden;
-            position: absolute;
-            width: 100%;
-            height: 0;
-            overflow: hidden;
-        }
-        .graph-container.active {
-            visibility: visible;
-            position: relative;
-            height: auto;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      .tab-buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .tab-button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #6c757d;
+        color: white;
+        transition: background-color 0.3s;
+      }
+
+      .tab-button:hover {
+        background-color: #5a6268;
+      }
+
+      .tab-button.active {
+        background-color: #007bff;
+      }
+
+      .graph-container {
+        visibility: hidden;
+        position: absolute;
+        width: 100%;
+        height: 0;
+        overflow: hidden;
+      }
+
+      .graph-container.active {
+        visibility: visible;
+        position: relative;
+        height: auto;
+      }
     </style>
-</head>
-<body>
-  <!-- the different Graphs can add more-->
+  </head>
+
+  <body>
     <h1>Economic Simulator</h1>
+    
+    <!-- Tab buttons for switching between graphs -->
     <div class="tab-buttons">
-        <button class="tab-button active" onclick="showGraph('equilibrium', this)">Equilibrium Graph</button>
-        <button class="tab-button" onclick="showGraph('ppf', this)">PPF Graph</button>
-        <button class="tab-button" onclick="showGraph('monopoly', this)">Monopoly Graph</button>
-        <button class="tab-button" onclick="showGraph('s+d', this)">Supply & Demand Graph</button>
+      <button class="tab-button active" onclick="showGraph('equilibrium', this)">Equilibrium Graph</button>
+      <button class="tab-button" onclick="showGraph('ppf', this)">PPF Graph</button>
+      <button class="tab-button" onclick="showGraph('monopoly', this)">Monopoly Graph</button>
+      <button class="tab-button" onclick="showGraph('s+d', this)">Supply & Demand Graph</button>
     </div>
-  <!-- Equilibrium Graph-->
+
+    <!-- Equilibrium Graph -->
     <div id="equilibrium" class="graph-container active">
-        <div class="kg-container">
+      <div class="kg-container">
 schema: EconSchema
-params: 
-  - {name: demandShift, value: 0, min: -2, max: 2, round: 0.1}
-  - {name: supplyShift, value: 0, min: -2, max: 2, round: 0.1}
+params:
+- {name: demandShift, value: 0, min: -2, max: 2, round: 0.1}
+- {name: supplyShift, value: 0, min: -2, max: 2, round: 0.1}
 layout:
   OneGraphPlusSidebar:
     graph:
@@ -119,49 +131,49 @@ layout:
         title: Price
         max: 10
       objects:
-        - EconLinearEquilibrium:
-            name: ourEquilibrium
-            demand: 
-              name: ourDemand
-              xIntercept: 8 + params.demandShift
-              invSlope: -1
-              drag: 
-                - horizontal: demandShift
-              surplus: 
-                fill: blue
-            supply: 
-              name: ourSupply
-              yIntercept: 0 - params.supplyShift
-              slope: 1
-              drag: 
-                - horizontal: supplyShift
-              surplus: 
-                fill: red
-            equilibrium:
-              droplines:
-                vertical: "`Q_0 = ${calcs.ourEquilibrium.Q.toFixed(2)}`"
-                horizontal: "`P_0 = ${calcs.ourEquilibrium.P.toFixed(2)}`"
+      - EconLinearEquilibrium:
+          name: ourEquilibrium
+          demand:
+            name: ourDemand
+            xIntercept: 8 + params.demandShift
+            invSlope: -1
+            drag:
+            - horizontal: demandShift
+            surplus:
+              fill: blue
+          supply:
+            name: ourSupply
+            yIntercept: 0 - params.supplyShift
+            slope: 1
+            drag:
+            - horizontal: supplyShift
+            surplus:
+              fill: red
+          equilibrium:
+            droplines:
+              vertical: "`Q_0 = ${calcs.ourEquilibrium.Q.toFixed(2)}`"
+              horizontal: "`P_0 = ${calcs.ourEquilibrium.P.toFixed(2)}`"
     sidebar:
       controls:
-      - title: Consumer And Producer Surplus 
+      - title: Consumer And Producer Surplus
         description: This graph shows the consumer surplus (blue) and producer surplus (red) at equilibrium. Drag the curves to see how shifts affect the market.
         sliders:
         - param: demandShift
           label: Demand Shift
         - param: supplyShift
           label: Supply Shift
-        </div>
+      </div>
     </div>
-    
+
+    <!-- Production Possibility Frontier Graph -->
     <div id="ppf" class="graph-container">
-        <div class="kg-container">
-<!-- Production Possibility Frontier Graph -->
+      <div class="kg-container">
 schema: EconSchema
-params: 
-  - {name: maxGuns, value: 100, min: 50, max: 150, round: 10}
-  - {name: maxButter, value: 100, min: 50, max: 150, round: 10}
-  - {name: currentGuns, value: 50, min: 0, max: 100, round: 5}
-  - {name: techShift, value: 0, min: 0, max: 40, round: 5}
+params:
+- {name: maxGuns, value: 100, min: 50, max: 150, round: 10}
+- {name: maxButter, value: 100, min: 50, max: 150, round: 10}
+- {name: currentGuns, value: 50, min: 0, max: 100, round: 5}
+- {name: techShift, value: 0, min: 0, max: 40, round: 5}
 calcs:
   currentButter: (params.maxButter) * sqrt(1 - (params.currentGuns/params.maxGuns)^2)
   maxGunsWithTech: params.maxGuns + params.techShift
@@ -176,39 +188,39 @@ layout:
         title: Butter
         max: 160
       objects:
-        - Curve:
-            fn: (params.maxButter) * sqrt(1 - (x/params.maxGuns)^2)
-            color: blue
-            strokeWidth: 3
-            label:
-              text: PPF
-              x: 80
-              y: 60
-        - Curve:
-            fn: calcs.maxButterWithTech * sqrt(1 - (x/calcs.maxGunsWithTech)^2)
-            color: green
-            strokeWidth: 3
-            label:
-              text: PPF with tech
-              x: 100
-              y: 80
-            show: params.techShift > 0
-        - Point:
-            coordinates: [params.currentGuns, calcs.currentButter]
-            color: red
-            r: 6
-            drag:
-              - horizontal: currentGuns
-            droplines:
-              vertical: "`Guns = ${params.currentGuns}`"
-              horizontal: "`Butter = ${calcs.currentButter.toFixed(1)}`"
-        - Point:
-            coordinates: [30, 30]
-            color: orange
-            r: 5
-            label:
-              text: Inefficient
-              position: br
+      - Curve:
+          fn: (params.maxButter) * sqrt(1 - (x/params.maxGuns)^2)
+          color: blue
+          strokeWidth: 3
+          label:
+            text: PPF
+            x: 80
+            y: 60
+      - Curve:
+          fn: calcs.maxButterWithTech * sqrt(1 - (x/calcs.maxGunsWithTech)^2)
+          color: green
+          strokeWidth: 3
+          label:
+            text: PPF with tech
+            x: 100
+            y: 80
+          show: params.techShift > 0
+      - Point:
+          coordinates: [params.currentGuns, calcs.currentButter]
+          color: red
+          r: 6
+          drag:
+          - horizontal: currentGuns
+          droplines:
+            vertical: "`Guns = ${params.currentGuns}`"
+            horizontal: "`Butter = ${calcs.currentButter.toFixed(1)}`"
+      - Point:
+          coordinates: [30, 30]
+          color: orange
+          r: 5
+          label:
+            text: Inefficient
+            position: br
     sidebar:
       controls:
       - title: Production Possibility Frontier
@@ -222,23 +234,22 @@ layout:
           label: Maximum Guns Capacity
         - param: maxButter
           label: Maximum Butter Capacity
-        </div>
+      </div>
     </div>
-    
+
+    <!-- Monopoly vs Perfect Competition Graph -->
     <div id="monopoly" class="graph-container">
-        <div class="kg-container">
-<!-- Monopoly vs Perfect Competition Graph -->
+      <div class="kg-container">
 schema: EconSchema
-params: 
-  - {name: demandIntercept, value: 10, min: 8, max: 12, round: 0.5}
-  - {name: mc, value: 2, min: 1, max: 4, round: 0.5}  
-  - {name: acShift, value: 0, min: -2, max: 2, round: 0.5}
+params:
+- {name: demandIntercept, value: 10, min: 8, max: 12, round: 0.5}
+- {name: mc, value: 2, min: 1, max: 4, round: 0.5}
+- {name: acShift, value: 0, min: -2, max: 2, round: 0.5}
 calcs:
   qMonopoly: (params.demandIntercept - params.mc) / 2
   pMonopoly: params.demandIntercept - calcs.qMonopoly
   qCompetitive: params.demandIntercept - params.mc
   pCompetitive: params.mc
-
 layout:
   OneGraphPlusSidebar:
     graph:
@@ -249,43 +260,43 @@ layout:
         title: Price
         max: 12
       objects:
-        - Line:
-            point: [0, params.demandIntercept]
-            point2: [params.demandIntercept, 0]
-            color: blue
-            strokeWidth: 2
-            label:
-              text: AR
-              x: 8
-        - Line:
-            point: [0, params.demandIntercept]
-            point2: [(params.demandIntercept/2), 0]
-            color: purple
-            strokeWidth: 2
-            label:
-              text: MR
-              x: 3
-        - Curve:
-              fn: 1 + ((x-2))^2
-              min: 1.2
-              max: 12
-              color: red
-              strokeWidth: 2
-              label:
-                text: MC
-                x: 4
-        - Curve:
-            fn: 3 + params.acShift + 4/(x+0.5) + 0.15*((x-4))^2
-            min: 1.2
-            max: 9
-            color: orange
-            strokeWidth: 2
-            label:
-              text: AC
-              x: 5
-              y: 3.2
-            drag:
-              - vertical: acShift
+      - Line:
+          point: [0, params.demandIntercept]
+          point2: [params.demandIntercept, 0]
+          color: blue
+          strokeWidth: 2
+          label:
+            text: AR
+            x: 8
+      - Line:
+          point: [0, params.demandIntercept]
+          point2: [(params.demandIntercept/2), 0]
+          color: purple
+          strokeWidth: 2
+          label:
+            text: MR
+            x: 3
+      - Curve:
+          fn: 1 + ((x-2))^2
+          min: 1.2
+          max: 12
+          color: red
+          strokeWidth: 2
+          label:
+            text: MC
+            x: 4
+      - Curve:
+          fn: 3 + params.acShift + 4/(x+0.5) + 0.15*((x-4))^2
+          min: 1.2
+          max: 9
+          color: orange
+          strokeWidth: 2
+          label:
+            text: AC
+            x: 5
+            y: 3.2
+          drag:
+          - vertical: acShift
     sidebar:
       controls:
       - title: Monopoly vs Perfect Competition
@@ -295,16 +306,16 @@ layout:
           label: Demand Intercept
         - param: acShift
           label: Average Cost Shift
-        </div>
+      </div>
     </div>
-    
+
+    <!-- Supply and Demand Shifts Graph -->
     <div id="s+d" class="graph-container">
-        <div class="kg-container">
-<!-- Supply and Demand Shifts Graph -->
+      <div class="kg-container">
 schema: EconSchema
 params:
-  - {name: demandShift, value: 0, min: -5, max: 5, round: 0.1}
-  - {name: supplyShift, value: 0, min: -5, max: 5, round: 0.1}
+- {name: demandShift, value: 0, min: -5, max: 5, round: 0.1}
+- {name: supplyShift, value: 0, min: -5, max: 5, round: 0.1}
 calcs:
   demandChanged: (params.demandShift^2 > 0.04)
   supplyChanged: (params.supplyShift^2 > 0.04)
@@ -318,76 +329,76 @@ layout:
         title: Price
         max: 12
       objects:
-        - EconLinearEquilibrium:
-            name: oldEquilibrium
-            demand:
-              name: oldDemand
-              xIntercept: 10
-              invSlope: -1
-              lineStyle: dotted
-              pts:
-                - name: a
-                  y: 4
-            supply:
-              name: oldSupply
-              yIntercept: 2
-              slope: 1
-              lineStyle: dotted
-              pts:
-                - name: a
-                  y: 8
-            equilibrium:
-              droplines:
-                vertical: Q_0
-                horizontal: P_0
-        - EconLinearEquilibrium:
-            name: newEquilibrium
-            demand:
-              name: newDemand
-              xIntercept: 10 + params.demandShift
-              invSlope: -1
-              pts:
-                - name: a
-                  y: 4
-              drag:
-                - horizontal: demandShift
-            supply:
-              name: newSupply
-              yIntercept: 2 - params.supplyShift
-              slope: 1
-              pts:
-                - name: a
-                  y: 8
-              drag:
-                - horizontal: supplyShift
-            equilibrium:
-              show: (calcs.demandChanged || calcs.supplyChanged)
-              droplines:
-                vertical: Q_1
-                horizontal: P_1
-        - Arrow:
-            begin: [calcs.oldDemand.a.x, 4]
-            end: [calcs.newDemand.a.x, 4]
-            show: calcs.demandChanged
-            color: blue
-            trim: 0.1
-        - Arrow:
-            begin: [calcs.oldSupply.a.x, 8]
-            end: [calcs.newSupply.a.x, 8]
-            show: calcs.supplyChanged
-            color: red
-            trim: 0.1
+      - EconLinearEquilibrium:
+          name: oldEquilibrium
+          demand:
+            name: oldDemand
+            xIntercept: 10
+            invSlope: -1
+            lineStyle: dotted
+            pts:
+            - name: a
+              y: 4
+          supply:
+            name: oldSupply
+            yIntercept: 2
+            slope: 1
+            lineStyle: dotted
+            pts:
+            - name: a
+              y: 8
+          equilibrium:
+            droplines:
+              vertical: Q_0
+              horizontal: P_0
+      - EconLinearEquilibrium:
+          name: newEquilibrium
+          demand:
+            name: newDemand
+            xIntercept: 10 + params.demandShift
+            invSlope: -1
+            pts:
+            - name: a
+              y: 4
+            drag:
+            - horizontal: demandShift
+          supply:
+            name: newSupply
+            yIntercept: 2 - params.supplyShift
+            slope: 1
+            pts:
+            - name: a
+              y: 8
+            drag:
+            - horizontal: supplyShift
+          equilibrium:
+            show: (calcs.demandChanged || calcs.supplyChanged)
+            droplines:
+              vertical: Q_1
+              horizontal: P_1
+      - Arrow:
+          begin: [calcs.oldDemand.a.x, 4]
+          end: [calcs.newDemand.a.x, 4]
+          show: calcs.demandChanged
+          color: blue
+          trim: 0.1
+      - Arrow:
+          begin: [calcs.oldSupply.a.x, 8]
+          end: [calcs.newSupply.a.x, 8]
+          show: calcs.supplyChanged
+          color: red
+          trim: 0.1
     sidebar:
       controls:
-        - title: Supply and Demand Shifts
-          description: Drag the curves to see how supply and demand shifts affect equilibrium price and quantity. Arrows show the direction of the shift.
-          sliders:
-            - param: demandShift
-              label: Demand Shift
-            - param: supplyShift
-              label: Supply Shift
-        </div>
+      - title: Supply and Demand Shifts
+        description: Drag the curves to see how supply and demand shifts affect equilibrium price and quantity. Arrows show the direction of the shift.
+        sliders:
+        - param: demandShift
+          label: Demand Shift
+        - param: supplyShift
+          label: Supply Shift
+      </div>
     </div>
-</body>
+  </body>
 </html>
 {% endblock %}

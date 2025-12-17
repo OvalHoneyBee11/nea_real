@@ -32,7 +32,7 @@ class User(db.Model, UserMixin):
 
 class Class(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), unique=True, nullable=False)
+    name = db.Column(db.String(150), nullable=False)
     description = db.Column(db.String(500))
     teacher_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     code = db.Column(db.String(10), unique=True, nullable=False)
@@ -46,6 +46,16 @@ class Class(db.Model):
         secondary=class_question_sets,
         backref=db.backref("classes", lazy="dynamic"),
         lazy="dynamic",
+    )
+    chat_messages = db.relationship(
+        "ChatMessage", backref="class_obj", lazy=True, cascade="all, delete-orphan"
+    )
+    assignments = db.relationship(
+        "Assignment", backref="class_obj", lazy=True, cascade="all, delete-orphan"
+    )
+
+    __table_args__ = (
+        db.UniqueConstraint("teacher_id", "name", name="unique_class_name_per_teacher"),
     )
 
     @staticmethod
@@ -67,10 +77,16 @@ class ClassMembership(db.Model):
 
 class QuestionSet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), unique=True, nullable=False)
+    name = db.Column(db.String(150), nullable=False)
     description = db.Column(db.String(500))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     questions = db.relationship("Question", backref="question_set", lazy=True)
+
+    __table_args__ = (
+        db.UniqueConstraint(
+            "user_id", "name", name="unique_question_set_name_per_user"
+        ),
+    )
 
 
 class Question(db.Model):
@@ -88,7 +104,6 @@ class ChatMessage(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     class_id = db.Column(db.Integer, db.ForeignKey("class.id"), nullable=False)
     user = db.relationship("User", backref="chat_messages")
-    class_obj = db.relationship("Class", backref="chat_messages")
 
 
 class Assignment(db.Model):
@@ -101,4 +116,3 @@ class Assignment(db.Model):
     creator_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     attachment_url = db.Column(db.String(500))
     creator = db.relationship("User", backref="created_assignments")
-    class_obj = db.relationship("Class", backref="assignments")
