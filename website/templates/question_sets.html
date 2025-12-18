@@ -15,6 +15,16 @@
 <a href="{{ url_for('tests.questions', set_id=selected_set.id) }}">
     <button type="button" class="btn btn-success btn-sm">Add Questions</button>
 </a>
+<form method="POST"
+      action="{{ url_for('tests.delete_question_set', set_id=selected_set.id) }}"
+      style="display:inline;"
+      onsubmit="return confirm('Are you sure you want to delete this question set?');">
+
+    <button type="submit" class="btn btn-danger btn-sm">
+        Delete Question Set
+    </button>
+</form>
+
 {% if selected_set.questions %}
 <a href="{{ url_for('tests.flashcards', set_id=selected_set.id) }}">
     <button type="button" class="btn btn-primary btn-sm">Run Flashcards</button>
@@ -39,6 +49,16 @@
     {% for qs in question_sets %}
     <li>
         <strong>{{ qs.name }}</strong>
+        <form method="POST"
+            action="{{ url_for('tests.delete_question_set', set_id=qs.id) }}"
+            style="display:inline;"
+            onsubmit="return confirm('Delete this question set?');">
+
+            <button type="submit" class="btn btn-danger btn-sm">
+                Delete
+            </button>
+        </form>
+
         <a href="{{ url_for('tests.questions', set_id=qs.id) }}">
             <button type="button" class="btn btn-success btn-sm">Add Questions</button>
         </a>
@@ -56,10 +76,12 @@
         {% else %}
         <p style="margin-left: 1em; color: #666;">No questions yet</p>
         {% endif %}
+        
     </li>
     {% endfor %}
 </ul>
 {% else %}
 <p>No question sets found.</p>
+
 {% endif %}
 {% endblock %}

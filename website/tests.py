@@ -120,7 +120,7 @@ def delete_question(question_id):
 @tests.route("/flashcards/<int:set_id>", methods=["GET"])
 @login_required
 def flashcards(set_id):
-    # Get the question set (allow access if owner or shared with a class the user belongs to)
+    # Get the question set (allow access if woner or shared with a class the user belongs to)
     question_set = QuestionSet.query.get(set_id)
 
     if not question_set:
@@ -166,3 +166,18 @@ def flashcards(set_id):
         question_set=question_set,
         questions_data=questions_data,
     )
+@tests.route('/delete_set/<int:set_id>', methods=['POST'])
+@login_required
+def delete_question_set(set_id):
+    question_set = QuestionSet.query.get_or_404(set_id)
+
+    # Optional: authorisation check (very good for marks)
+    if question_set.user_id != current_user.id:
+        flash("You are not authorised to delete this set.", "danger")
+        return redirect(url_for('home'))
+
+    db.session.delete(question_set)
+    db.session.commit()
+
+    flash("Question set deleted successfully.", "success")
+    return redirect(url_for('views.home'))
